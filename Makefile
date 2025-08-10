@@ -153,7 +153,7 @@ helm-template: ## Template Helm charts
 install-tools: ## Install required tools
 	@echo "$(YELLOW)Installing required tools...$(NC)"
 	go install github.com/bufbuild/buf/cmd/buf@latest
-	go install github.com/cosmtrek/air@latest
+	go install github.com/air-verse/air@latest
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	@echo "$(GREEN)Tools installation complete!$(NC)"
 
