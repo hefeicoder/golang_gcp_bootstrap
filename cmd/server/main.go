@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/your-org/golang-grpc-gke/gen/api/v1/apiv1connect"
+	"github.com/your-org/golang-grpc-gke/gen/api/apiv1connect"
 	"github.com/your-org/golang-grpc-gke/internal/server"
 )
 

@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.v1;
 
-import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/your-org/golang-grpc-gke/gen/api/v1;apiv1";
@@ -10,33 +9,16 @@ option go_package = "github.com/your-org/golang-grpc-gke/gen/api/v1;apiv1";
 // GrpcService provides a modern gRPC API
 service GrpcService {
   // GetHealth returns the health status of the service
-  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse) {
-    option (google.api.http) = {
-      get: "/v1/health"
-    };
-  }
+  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
 
   // GetInfo returns information about the service
-  rpc GetInfo(GetInfoRequest) returns (GetInfoResponse) {
-    option (google.api.http) = {
-      get: "/v1/info"
-    };
-  }
+  rpc GetInfo(GetInfoRequest) returns (GetInfoResponse);
 
   // ProcessData processes some data and returns a result
-  rpc ProcessData(ProcessDataRequest) returns (ProcessDataResponse) {
-    option (google.api.http) = {
-      post: "/v1/data"
-      body: "*"
-    };
-  }
+  rpc ProcessData(ProcessDataRequest) returns (ProcessDataResponse);
 
   // StreamData streams data processing results
-  rpc StreamData(StreamDataRequest) returns (stream StreamDataResponse) {
-    option (google.api.http) = {
-      get: "/v1/stream"
-    };
-  }
+  rpc StreamData(StreamDataRequest) returns (stream StreamDataResponse);
 }
 
 // GetHealthRequest is the request for GetHealth

@@ -1,7 +1,6 @@
 version: v1
 name: buf.build/your-org/grpc-service
-deps:
-  - buf.build/googleapis/googleapis
+deps: []
 lint:
   use:
     - DEFAULT

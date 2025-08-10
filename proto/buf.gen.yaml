@@ -5,11 +5,8 @@ managed:
     default: github.com/your-org/golang-grpc-gke/gen
 plugins:
   - plugin: buf.build/protocolbuffers/go
-    out: gen
+    out: ../gen
     opt: paths=source_relative
   - plugin: buf.build/bufbuild/connect-go
-    out: gen
-    opt: paths=source_relative
-  - plugin: buf.build/grpc/go
-    out: gen
+    out: ../gen
     opt: paths=source_relative
