@@ -30,7 +30,7 @@ jobs:
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
       - name: Generate protobuf code
-        run: buf generate
+        run: cd proto && buf generate
 
       - name: Run linters
         run: golangci-lint run
@@ -64,7 +64,7 @@ jobs:
           go install github.com/bufbuild/buf/cmd/buf@latest
 
       - name: Generate protobuf code
-        run: buf generate
+        run: cd proto && buf generate
 
       - name: Build application
         run: |

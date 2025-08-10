@@ -30,7 +30,7 @@ setup: ## Setup development environment
 .PHONY: generate
 generate: ## Generate protobuf code
 	@echo "$(YELLOW)Generating protobuf code...$(NC)"
-	buf generate
+	cd proto && buf generate
 	@echo "$(GREEN)Code generation complete!$(NC)"
 
 .PHONY: build

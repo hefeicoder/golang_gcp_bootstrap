@@ -20,7 +20,7 @@ COPY . .
 
 # Generate protobuf code
 RUN go install github.com/bufbuild/buf/cmd/buf@latest
-RUN buf generate
+RUN cd proto && buf generate
 
 # Expose ports
 EXPOSE 9090 8080
