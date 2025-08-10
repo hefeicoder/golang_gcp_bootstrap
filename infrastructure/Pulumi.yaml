@@ -1,0 +1,14 @@
+name: golang-grpc-gke
+runtime: go
+description: Modern Go gRPC backend infrastructure for GKE
+config:
+  gcp:project:
+    description: The GCP project ID
+  gcp:region:
+    description: The GCP region for resources
+    default: us-central1
+  domain-name:
+    description: The domain name for SSL certificates
+  environment:
+    description: The deployment environment (dev, staging, prod)
+    default: dev

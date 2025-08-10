@@ -1,0 +1,385 @@
+# Deployment Guide
+
+This guide will walk you through deploying the modern Go gRPC backend to Google Kubernetes Engine (GKE).
+
+## Prerequisites
+
+Before you begin, ensure you have the following tools installed:
+
+- [Go 1.21+](https://golang.org/dl/)
+- [Docker](https://docs.docker.com/get-docker/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+- [Pulumi CLI](https://www.pulumi.com/docs/install/)
+- [Helm CLI](https://helm.sh/docs/intro/install/)
+- [Skaffold CLI](https://skaffold.dev/docs/install/)
+- [Buf CLI](https://docs.buf.build/installation)
+
+## Quick Start
+
+### 1. Clone and Setup
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd golang-grpc-gke
+
+# Run the quick start script
+./scripts/quickstart.sh
+```
+
+### 2. Configure GCP
+
+```bash
+# Set your GCP project
+export GOOGLE_PROJECT_ID="your-project-id"
+gcloud config set project $GOOGLE_PROJECT_ID
+
+# Enable required APIs
+gcloud services enable container.googleapis.com
+gcloud services enable compute.googleapis.com
+gcloud services enable dns.googleapis.com
+gcloud services enable cloudbuild.googleapis.com
+```
+
+### 3. Configure Pulumi
+
+```bash
+cd infrastructure
+
+# Set Pulumi configuration
+pulumi config set gcp:project $GOOGLE_PROJECT_ID
+pulumi config set gcp:region us-central1
+pulumi config set domain-name your-domain.com
+pulumi config set environment dev
+
+# Login to Pulumi (if using Pulumi Cloud)
+pulumi login
+```
+
+### 4. Deploy Infrastructure
+
+```bash
+# Deploy the entire infrastructure
+make deploy
+
+# Or deploy manually
+cd infrastructure
+pulumi up --yes
+```
+
+This will create:
+- GKE cluster with autoscaling
+- DNS zone and managed SSL certificates
+- Load balancer with external IP
+- Kubernetes resources via Helm
+
+### 5. Deploy Application
+
+```bash
+# Deploy the application using Skaffold
+make dev
+
+# Or deploy to specific environment
+make deploy-staging
+make deploy-prod
+```
+
+## Development Workflow
+
+### Local Development
+
+```bash
+# Start development with hot reload
+make dev
+
+# This will:
+# 1. Build and push Docker image
+# 2. Deploy to local/remote cluster
+# 3. Start file watching for hot reload
+# 4. Port forward services locally
+```
+
+### Testing
+
+```bash
+# Run all tests
+make test
+
+# Run tests with coverage
+make test-coverage
+
+# Run linters
+make lint
+
+# Run all checks
+make all
+```
+
+### Building and Pushing
+
+```bash
+# Build Docker image
+make docker-build
+
+# Push to registry
+make docker-push
+```
+
+## Environment Configuration
+
+### Development Environment
+
+```bash
+# Use development profile
+skaffold dev --profile=dev
+
+# Or with custom values
+skaffold dev --profile=dev --set=replicaCount=1
+```
+
+### Staging Environment
+
+```bash
+# Deploy to staging
+skaffold run --profile=staging
+
+# Or with custom image tag
+skaffold run --profile=staging --tag=latest
+```
+
+### Production Environment
+
+```bash
+# Deploy to production
+skaffold run --profile=prod
+
+# Or with specific version
+skaffold run --profile=prod --tag=v1.0.0
+```
+
+## Monitoring and Observability
+
+### Health Checks
+
+The application exposes health check endpoints:
+
+- **gRPC Health**: `grpc://your-domain.com:9090/grpc.health.v1.Health/Check`
+- **HTTP Health**: `http://your-domain.com:8080/health`
+- **Readiness**: `http://your-domain.com:8080/ready`
+- **Metrics**: `http://your-domain.com:8080/metrics`
+
+### Logs
+
+```bash
+# View application logs
+kubectl logs -f deployment/grpc-service
+
+# View logs from specific pod
+kubectl logs -f pod/grpc-service-xxxxx
+```
+
+### Metrics
+
+The application exposes Prometheus metrics at `/metrics`. You can:
+
+1. Set up Prometheus to scrape these metrics
+2. Use Grafana for visualization
+3. Set up alerting rules
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Pulumi Deployment Fails
+
+```bash
+# Check Pulumi state
+pulumi stack
+
+# View detailed logs
+pulumi up --yes --verbose=3
+
+# Destroy and recreate
+pulumi destroy --yes
+pulumi up --yes
+```
+
+#### 2. Kubernetes Pods Not Starting
+
+```bash
+# Check pod status
+kubectl get pods
+
+# Describe pod for details
+kubectl describe pod <pod-name>
+
+# Check events
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+#### 3. Service Not Accessible
+
+```bash
+# Check service status
+kubectl get svc
+
+# Check ingress status
+kubectl get ingress
+
+# Test connectivity
+kubectl port-forward svc/grpc-service 9090:9090
+```
+
+#### 4. SSL Certificate Issues
+
+```bash
+# Check certificate status
+kubectl describe managedcertificate
+
+# Verify DNS records
+nslookup your-domain.com
+
+# Check certificate provisioning
+gcloud compute ssl-certificates list
+```
+
+### Debugging Commands
+
+```bash
+# Get cluster info
+kubectl cluster-info
+
+# Check node status
+kubectl get nodes
+
+# View all resources
+kubectl get all
+
+# Check resource usage
+kubectl top pods
+kubectl top nodes
+
+# Access pod shell
+kubectl exec -it <pod-name> -- /bin/sh
+```
+
+## Security Considerations
+
+### Network Policies
+
+The deployment includes network policies to restrict pod-to-pod communication. Review and adjust as needed:
+
+```bash
+# View network policies
+kubectl get networkpolicies
+
+# Apply custom policies
+kubectl apply -f k8s/network-policies/
+```
+
+### RBAC
+
+The application uses a dedicated ServiceAccount with minimal permissions:
+
+```bash
+# Check RBAC
+kubectl get serviceaccounts
+kubectl get roles
+kubectl get rolebindings
+```
+
+### Secrets Management
+
+For production, use Kubernetes secrets or external secret management:
+
+```bash
+# Create secrets
+kubectl create secret generic app-secrets \
+  --from-literal=api-key=your-api-key \
+  --from-literal=db-password=your-db-password
+```
+
+## Scaling
+
+### Horizontal Pod Autoscaling
+
+The deployment includes HPA for automatic scaling:
+
+```bash
+# Check HPA status
+kubectl get hpa
+
+# View HPA details
+kubectl describe hpa grpc-service
+```
+
+### Manual Scaling
+
+```bash
+# Scale manually
+kubectl scale deployment grpc-service --replicas=5
+
+# Or via Helm
+helm upgrade grpc-service helm/grpc-service --set replicaCount=5
+```
+
+## Backup and Recovery
+
+### Backup Strategy
+
+1. **Application Data**: Use persistent volumes with regular snapshots
+2. **Configuration**: Store in Git with version control
+3. **Infrastructure**: Pulumi state is versioned and backed up
+
+### Recovery Procedures
+
+```bash
+# Restore from backup
+kubectl apply -f backup/
+
+# Recreate infrastructure
+pulumi up --yes
+
+# Redeploy application
+skaffold run --profile=prod
+```
+
+## Cost Optimization
+
+### Resource Optimization
+
+1. **Right-size requests/limits**: Monitor actual usage and adjust
+2. **Use spot instances**: Configure node pools with spot instances
+3. **Enable cluster autoscaler**: Automatically scale nodes based on demand
+
+### Monitoring Costs
+
+```bash
+# Check GCP billing
+gcloud billing accounts list
+
+# Monitor resource usage
+kubectl top nodes
+kubectl top pods
+```
+
+## Support
+
+For issues and questions:
+
+1. Check the troubleshooting section above
+2. Review logs and metrics
+3. Check GitHub Issues
+4. Contact the development team
+
+## Next Steps
+
+After successful deployment:
+
+1. Set up monitoring and alerting
+2. Configure CI/CD pipelines
+3. Implement backup strategies
+4. Set up cost monitoring
+5. Plan for disaster recovery
+6. Document runbooks for common operations

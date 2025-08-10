@@ -1,0 +1,103 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: golang-grpc-gke
+
+build:
+  artifacts:
+    - image: grpc-service
+      docker:
+        dockerfile: Dockerfile
+        context: .
+  tagPolicy:
+    gitCommit: {}
+  local:
+    push: false
+  googleCloudBuild:
+    projectId: your-project-id
+
+deploy:
+  helm:
+    releases:
+      - name: grpc-service
+        chartPath: helm/grpc-service
+        valuesFiles:
+          - helm/grpc-service/values.yaml
+        setValues:
+          image.repository: grpc-service
+          image.tag: latest
+          replicaCount: 2
+          autoscaling.enabled: false
+          ingress.enabled: false
+        namespace: default
+        wait: true
+        timeout: 5m
+
+portForward:
+  - resourceType: service
+    resourceName: grpc-service
+    port: 9090
+    localPort: 9090
+  - resourceType: service
+    resourceName: grpc-service
+    port: 8080
+    localPort: 8080
+
+test:
+  - image: grpc-service
+    structureTests:
+      - ./test/structure/*.yaml
+    customTests:
+      - command: go test ./...
+        timeout: 5m
+
+profiles:
+  - name: dev
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/dockerfile
+        value: Dockerfile.dev
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/replicaCount
+        value: 1
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/autoscaling.enabled
+        value: false
+
+  - name: staging
+    patches:
+      - op: replace
+        path: /build/tagPolicy
+        value:
+          sha256: {}
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/replicaCount
+        value: 3
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/autoscaling.enabled
+        value: true
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/ingress.enabled
+        value: true
+
+  - name: prod
+    patches:
+      - op: replace
+        path: /build/tagPolicy
+        value:
+          sha256: {}
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/replicaCount
+        value: 5
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/autoscaling.enabled
+        value: true
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/ingress.enabled
+        value: true
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/resources/limits/cpu
+        value: 2000m
+      - op: replace
+        path: /deploy/helm/releases/0/setValues/resources/limits/memory
+        value: 2Gi

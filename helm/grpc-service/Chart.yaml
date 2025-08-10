@@ -1,0 +1,17 @@
+apiVersion: v2
+name: grpc-service
+description: A modern Go gRPC service for GKE
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - grpc
+  - go
+  - kubernetes
+  - gke
+home: https://github.com/your-org/golang-grpc-gke
+sources:
+  - https://github.com/your-org/golang-grpc-gke
+maintainers:
+  - name: Your Name
+    email: your-email@example.com
