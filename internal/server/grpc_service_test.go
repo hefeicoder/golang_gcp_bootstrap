@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	apiv1 "github.com/your-org/golang-grpc-gke/gen/api"
+	apiv1 "github.com/hefeicoder/golang-grpc-gke/gen/api"
 )
 
 func TestNewGrpcService(t *testing.T) {

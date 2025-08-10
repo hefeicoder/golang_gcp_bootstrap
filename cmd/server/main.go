@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/your-org/golang-grpc-gke/gen/api/apiv1connect"
-	"github.com/your-org/golang-grpc-gke/internal/server"
+	"github.com/hefeicoder/golang-grpc-gke/gen/api/apiv1connect"
+	"github.com/hefeicoder/golang-grpc-gke/internal/server"
 )
 
 const (

@@ -4,7 +4,7 @@ package api.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/your-org/golang-grpc-gke/gen/api/v1;apiv1";
+option go_package = "github.com/hefeicoder/golang-grpc-gke/gen/api/v1;apiv1";
 
 // GrpcService provides a modern gRPC API
 service GrpcService {

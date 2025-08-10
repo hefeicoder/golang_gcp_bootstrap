@@ -1,4 +1,4 @@
-module github.com/your-org/golang-grpc-gke
+module github.com/hefeicoder/golang-grpc-gke
 
 go 1.21
 
@@ -12,7 +12,7 @@ require (
 	google.golang.org/protobuf v1.31.0
 )
 
-replace github.com/your-org/golang-grpc-gke/gen => ./gen
+replace github.com/hefeicoder/golang-grpc-gke/gen => ./gen
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

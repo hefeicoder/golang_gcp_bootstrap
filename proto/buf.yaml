@@ -1,5 +1,5 @@
 version: v1
-name: buf.build/your-org/grpc-service
+name: buf.build/hefeicoder/grpc-service
 deps: []
 lint:
   use:
