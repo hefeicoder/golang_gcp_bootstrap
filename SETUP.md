@@ -154,66 +154,6 @@ EOF
 source .env
 ```
 
-### **Local Development Setup (No Secrets Needed)**
-
-For **completely local development**:
-
-```bash
-# 1. Set up local environment
-export GCP_PROJECT_ID="your-project-id"
-export GCP_REGION="us-central1"
-
-# 2. Use local authentication
-gcloud auth application-default login
-gcloud config set project $GCP_PROJECT_ID
-
-# 3. Use local Docker builds
-make dev  # Uses local Docker, no cloud costs
-
-# 4. Use local Kubernetes (optional)
-minikube start  # Free local cluster
-kind create cluster  # Free local cluster
-```
-
-### **Benefits of Local Configuration:**
-
-- ✅ **No secrets in repo** - sensitive data stays local
-- ✅ **Easy to manage** - simple environment variables
-- ✅ **Development-friendly** - fast iteration
-- ✅ **Secure** - credentials never leave your machine
-- ✅ **Flexible** - different configs for different environments
-- ✅ **Version control safe** - no accidental commits
-
-### **Security Best Practices for Local Config:**
-
-1. **Never commit sensitive files**:
-   ```bash
-   # Add to .gitignore
-   echo ".env" >> .gitignore
-   echo "*.local.yaml" >> .gitignore
-   echo "~/.config/golang-grpc-bootstrap/" >> .gitignore
-   ```
-
-2. **Use environment-specific files**:
-   ```bash
-   .env.dev      # Development settings
-   .env.staging  # Staging settings  
-   .env.prod     # Production settings
-   ```
-
-3. **Rotate credentials regularly**:
-   ```bash
-   # Refresh gcloud credentials
-   gcloud auth application-default login
-   ```
-
-4. **Use least privilege**:
-   ```bash
-   # Create development-only service account
-   gcloud iam service-accounts create dev-user \
-     --display-name="Development User"
-   ```
-
 ### 7. Deploy Infrastructure
 ```bash
 # Deploy infrastructure using gcloud
