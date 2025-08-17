@@ -1,5 +1,5 @@
 version: v1
-name: buf.build/hefeicoder/golang-grpc-gke
+name: buf.build/hefeicoder/example-backend
 deps: []
 lint:
   use:

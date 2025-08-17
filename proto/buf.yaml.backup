@@ -1,9 +1,0 @@
-version: v1
-name: buf.build/hefeicoder/grpc-service
-deps: []
-lint:
-  use:
-    - DEFAULT
-breaking:
-  use:
-    - FILE
