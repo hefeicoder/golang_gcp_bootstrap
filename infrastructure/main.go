@@ -172,8 +172,8 @@ func createK8sProvider(ctx *pulumi.Context, cluster *gcp.Container.Cluster) (*ku
 }
 
 func deployHelmChart(ctx *pulumi.Context, k8sProvider *kubernetes.Provider, externalIP *gcp.Compute.Address, certificate *gcp.Compute.ManagedSslCertificate, domainName string) (*helm.Release, error) {
-	return helm.NewRelease(ctx, "grpc-service", &helm.ReleaseArgs{
-		Chart:     pulumi.String("helm/grpc-service"),
+	return helm.NewRelease(ctx, "test-backend", &helm.ReleaseArgs{
+		Chart:     pulumi.String("helm/test-backend"),
 		Namespace: pulumi.String("default"),
 		Values: pulumi.Map{
 			"ingress": pulumi.Map{

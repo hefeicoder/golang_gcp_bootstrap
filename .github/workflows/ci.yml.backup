@@ -97,8 +97,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ secrets.freegcpproject-469318 }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ secrets.freegcpproject-469318 }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -129,7 +129,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configure kubectl
-        run: gcloud container clusters get-credentials dev-cluster --region us-central1 --project ${{ secrets.freegcpproject-469318 }}
+        run: gcloud container clusters get-credentials dev-cluster --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to development
         run: |
@@ -162,7 +162,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configure kubectl
-        run: gcloud container clusters get-credentials staging-cluster --region us-central1 --project ${{ secrets.freegcpproject-469318 }}
+        run: gcloud container clusters get-credentials staging-cluster --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to staging
         run: |
@@ -180,7 +180,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ secrets.freegcpproject-469318 }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          image-ref: ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -216,7 +216,7 @@ jobs:
       - name: Deploy infrastructure
         working-directory: ./infrastructure
         run: |
-          pulumi config set gcp:project ${{ secrets.freegcpproject-469318 }}
+          pulumi config set gcp:project ${{ secrets.GCP_PROJECT_ID }}
           pulumi config set gcp:region us-central1
           pulumi config set domain-name ${{ secrets.DOMAIN_NAME }}
           pulumi config set environment prod
@@ -249,7 +249,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Configure kubectl
-        run: gcloud container clusters get-credentials prod-cluster --region us-central1 --project ${{ secrets.freegcpproject-469318 }}
+        run: gcloud container clusters get-credentials prod-cluster --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Deploy to production
         run: |

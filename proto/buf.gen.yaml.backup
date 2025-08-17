@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/hefeicoder/golang_gcp_bootstrap/test-backend/gen
+    default: github.com/hefeicoder/golang-grpc-gke/gen
 plugins:
   - plugin: buf.build/protocolbuffers/go
     out: ../gen

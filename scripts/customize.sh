@@ -43,11 +43,20 @@ fi
 echo "Please provide the following information to customize your project:"
 echo ""
 
-read -p "Enter your GitHub username/organization: " GITHUB_USER
+echo "📝 Project Information:"
 read -p "Enter your project name (e.g., my-backend): " PROJECT_NAME
 read -p "Enter your domain name (e.g., api.mycompany.com): " DOMAIN_NAME
+
+echo ""
+echo "🔧 Infrastructure Configuration:"
 read -p "Enter your GCP project ID: " GCP_PROJECT_ID
 read -p "Enter your Docker registry (e.g., gcr.io): " DOCKER_REGISTRY
+
+echo ""
+echo "📦 Go Module Configuration:"
+echo "   Go modules use paths like: github.com/USERNAME/PROJECT_NAME"
+echo "   This affects import statements and module resolution"
+read -p "Enter your GitHub username/organization (for Go module path): " GITHUB_USER
 
 # Validate inputs
 if [ -z "$GITHUB_USER" ] || [ -z "$PROJECT_NAME" ] || [ -z "$DOMAIN_NAME" ] || [ -z "$GCP_PROJECT_ID" ] || [ -z "$DOCKER_REGISTRY" ]; then
@@ -55,13 +64,24 @@ if [ -z "$GITHUB_USER" ] || [ -z "$PROJECT_NAME" ] || [ -z "$DOMAIN_NAME" ] || [
     exit 1
 fi
 
+# Convert project name to Buf-compatible format (no underscores)
+BUF_PROJECT_NAME=$(echo "$PROJECT_NAME" | sed 's/_/-/g')
+
 echo ""
 print_info "Customizing project with the following values:"
-echo "  GitHub User/Org: $GITHUB_USER"
-echo "  Project Name: $PROJECT_NAME"
-echo "  Domain Name: $DOMAIN_NAME"
-echo "  GCP Project ID: $GCP_PROJECT_ID"
-echo "  Docker Registry: $DOCKER_REGISTRY"
+echo "  📦 Go Module: github.com/$GITHUB_USER/$PROJECT_NAME"
+echo "  🏷️  Project Name: $PROJECT_NAME"
+echo "  🌐 Domain Name: $DOMAIN_NAME"
+echo "  ☁️  GCP Project ID: $GCP_PROJECT_ID"
+echo "  🐳 Docker Registry: $DOCKER_REGISTRY"
+echo "  📋 Buf Module: buf.build/$GITHUB_USER/$BUF_PROJECT_NAME"
+echo ""
+print_info "This will update:"
+echo "  • Go module path and import statements"
+echo "  • Protocol buffer package names"
+echo "  • Docker image names"
+echo "  • Kubernetes service names"
+echo "  • CI/CD configuration"
 echo ""
 
 read -p "Continue with these values? (y/N): " CONFIRM
@@ -91,7 +111,7 @@ sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/
 # Update proto files
 print_status "Updating protocol buffer files..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
-sed -i.bak "s|buf.build/hefeicoder/grpc-service|buf.build/$GITHUB_USER/$PROJECT_NAME|g" proto/buf.yaml
+sed -i.bak "s|buf.build/hefeicoder/golang-grpc-gke|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files

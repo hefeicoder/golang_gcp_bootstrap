@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apiv1 "github.com/hefeicoder/golang-grpc-gke/gen/api"
+	apiv1 "github.com/hefeicoder/golang_gcp_bootstrap/test-backend/gen/api"
 )
 
 // GrpcService implements the gRPC service

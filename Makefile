@@ -1,6 +1,6 @@
 # Variables
 PROJECT_NAME := golang-grpc-gke
-IMAGE_NAME := grpc-service
+IMAGE_NAME := test-backend
 REGISTRY ?= gcr.io
 PROJECT_ID ?= your-project-id
 VERSION ?= $(shell git describe --tags --always --dirty)
@@ -140,13 +140,13 @@ proto-breaking: ## Check for breaking changes in protocol buffers
 .PHONY: helm-lint
 helm-lint: ## Lint Helm charts
 	@echo "$(YELLOW)Linting Helm charts...$(NC)"
-	helm lint helm/grpc-service
+	helm lint helm/test-backend
 	@echo "$(GREEN)Helm linting complete!$(NC)"
 
 .PHONY: helm-template
 helm-template: ## Template Helm charts
 	@echo "$(YELLOW)Templating Helm charts...$(NC)"
-	helm template grpc-service helm/grpc-service
+	helm template test-backend helm/test-backend
 	@echo "$(GREEN)Helm templating complete!$(NC)"
 
 .PHONY: install-tools

@@ -20,10 +20,11 @@ cd golang_gcp_bootstrap
 ```
 
 **What gets customized:**
-- Module name (`github.com/YOUR_USERNAME/YOUR_PROJECT`)
-- Service name and descriptions
-- Domain names and environment variables
-- Docker image names and tags
+- **Go Module Path**: `github.com/YOUR_USERNAME/YOUR_PROJECT` (for import statements)
+- **Service Name**: Used in Kubernetes, Docker, and Helm charts
+- **Domain Name**: For SSL certificates and ingress configuration
+- **GCP Project**: Your Google Cloud project ID
+- **Docker Registry**: Where to push container images
 
 ### 3. **Set Up Your Environment**
 ```bash
@@ -77,6 +78,36 @@ make deploy-dev
 | **CI/CD** | GitHub Actions | Automated testing and deployment |
 | **Monitoring** | Prometheus + Cloud Logging | Observability |
 | **Security** | Trivy | Vulnerability scanning |
+
+## 🔧 Customization Explained
+
+### **Why GitHub Username/Organization?**
+The GitHub username is used to create **Go module paths** that follow Go's convention:
+
+```
+github.com/USERNAME/PROJECT_NAME
+```
+
+This affects:
+- **Import statements** in your Go code
+- **Module resolution** when `go mod` runs
+- **Generated code** from protobuf definitions
+- **CI/CD workflows** that reference your repository
+
+**Example:**
+- Original: `github.com/hefeicoder/golang-grpc-gke`
+- After customization: `github.com/your-company/my-backend`
+
+### **What Gets Updated**
+The customization script replaces placeholders across all files:
+- `go.mod` - Module path and dependencies
+- `*.go` files - Import statements
+- `proto/*` - Package names and generated code paths
+- `helm/*` - Service names and configurations
+- `Dockerfile*` - Image names
+- `.github/workflows/*` - Repository references
+
+**Note:** Project names with underscores (e.g., `my_backend`) will be converted to hyphens (e.g., `my-backend`) in Buf module names to comply with Buf's naming requirements.
 
 ## 📁 Project Structure
 

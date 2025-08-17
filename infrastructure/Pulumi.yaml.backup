@@ -1,4 +1,4 @@
-name: test-backend
+name: golang-grpc-gke
 runtime: go
 description: Modern Go gRPC backend infrastructure for GKE
 config:

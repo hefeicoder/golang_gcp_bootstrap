@@ -8,7 +8,7 @@ import (
 	context "context"
 	errors "errors"
 	connect_go "github.com/bufbuild/connect-go"
-	api "github.com/hefeicoder/golang-grpc-gke/gen/api"
+	api "github.com/hefeicoder/golang_gcp_bootstrap/test-backend/gen/api"
 	http "net/http"
 	strings "strings"
 )

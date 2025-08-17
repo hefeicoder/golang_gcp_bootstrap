@@ -1,8 +1,8 @@
-# Default values for test-backend
+# Default values for grpc-service
 replicaCount: 3
 
 image:
-  repository: test-backend
+  repository: grpc-service
   tag: "latest"
   pullPolicy: IfNotPresent
 
