@@ -24,8 +24,8 @@ Before you begin, ensure you have the following tools installed:
 git clone <your-repo-url>
 cd golang-grpc-gke
 
-# Run the quick start script
-./scripts/quickstart.sh
+# Run the local configuration setup script
+./scripts/setup-local-config.sh
 ```
 
 ### 2. Set Up Local Configuration
