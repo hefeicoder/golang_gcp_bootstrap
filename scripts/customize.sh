@@ -45,7 +45,6 @@ echo ""
 
 echo "📝 Project Information:"
 echo "   Project name will be used for:"
-echo "   • Go module path (github.com/USERNAME/PROJECT_NAME)"
 echo "   • Docker image names"
 echo "   • Kubernetes service names"
 echo "   • Infrastructure resource names"
@@ -60,19 +59,28 @@ read -p "Enter your Docker registry (e.g., gcr.io): " DOCKER_REGISTRY
 
 echo ""
 echo "📦 Go Module Configuration:"
-echo "   Go modules use paths like: github.com/USERNAME/PROJECT_NAME"
+echo "   Go modules use paths like: github.com/USERNAME/REPOSITORY_NAME"
 echo "   This affects import statements and module resolution"
-read -p "Enter your GitHub username/organization (for Go module path): " GITHUB_USER
+echo "   Note: Repository name can be different from project name"
+read -p "Enter your GitHub username/organization: " GITHUB_USER
+read -p "Enter your GitHub repository name: " REPO_NAME
 
-# Handle case where user enters full repository path
+# Handle case where user enters full repository path for username
 if [[ "$GITHUB_USER" == *"/"* ]]; then
     # Extract username from full path (e.g., "hefeicoder/golang_gcp_bootstrap" -> "hefeicoder")
     GITHUB_USER=$(echo "$GITHUB_USER" | cut -d'/' -f1)
     print_info "Extracted GitHub username: $GITHUB_USER"
 fi
 
+# Handle case where user enters full repository path for repo name
+if [[ "$REPO_NAME" == *"/"* ]]; then
+    # Extract repo name from full path (e.g., "hefeicoder/golang_gcp_bootstrap" -> "golang_gcp_bootstrap")
+    REPO_NAME=$(echo "$REPO_NAME" | cut -d'/' -f2)
+    print_info "Extracted repository name: $REPO_NAME"
+fi
+
 # Validate inputs
-if [ -z "$GITHUB_USER" ] || [ -z "$PROJECT_NAME" ] || [ -z "$DOMAIN_NAME" ] || [ -z "$GCP_PROJECT_ID" ] || [ -z "$DOCKER_REGISTRY" ]; then
+if [ -z "$GITHUB_USER" ] || [ -z "$REPO_NAME" ] || [ -z "$PROJECT_NAME" ] || [ -z "$DOMAIN_NAME" ] || [ -z "$GCP_PROJECT_ID" ] || [ -z "$DOCKER_REGISTRY" ]; then
     print_error "All fields are required!"
     exit 1
 fi
@@ -82,8 +90,9 @@ BUF_PROJECT_NAME=$(echo "$PROJECT_NAME" | sed 's/_/-/g')
 
 echo ""
 print_info "Customizing project with the following values:"
-echo "  📦 Go Module: github.com/$GITHUB_USER/$PROJECT_NAME"
+echo "  📦 Go Module: github.com/$GITHUB_USER/$REPO_NAME"
 echo "  🏷️  Project Name: $PROJECT_NAME"
+echo "  📁 Repository Name: $REPO_NAME"
 echo "  🌐 Domain Name: $DOMAIN_NAME"
 echo "  ☁️  GCP Project ID: $GCP_PROJECT_ID"
 echo "  🐳 Docker Registry: $DOCKER_REGISTRY"
@@ -119,19 +128,19 @@ cp .golangci.yml .golangci.yml.backup
 cp DEPLOYMENT.md DEPLOYMENT.md.backup
 
 # Update go.mod
-print_status "Updating go.mod with project name '$PROJECT_NAME'..."
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$PROJECT_NAME|g" go.mod
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" go.mod
+print_status "Updating go.mod with repository name '$REPO_NAME'..."
+sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
+sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
 
 # Update proto files
-print_status "Updating protocol buffer files with project name '$PROJECT_NAME'..."
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
+print_status "Updating protocol buffer files with repository name '$REPO_NAME'..."
+sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
 sed -i.bak "s|buf.build/hefeicoder/golang-grpc-gke|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
+sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
-print_status "Updating Go source files with project name '$PROJECT_NAME'..."
-find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$PROJECT_NAME|g" {} \;
+print_status "Updating Go source files with repository name '$REPO_NAME'..."
+find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
 
 # Update infrastructure files
 print_status "Updating infrastructure configuration with project name '$PROJECT_NAME'..."
@@ -145,20 +154,20 @@ sed -i.bak "s|grpc-service|$PROJECT_NAME|g" helm/grpc-service/values.yaml
 sed -i.bak "s|your-domain.com|$DOMAIN_NAME|g" helm/grpc-service/values.yaml
 
 # Update CI/CD workflow
-print_status "Updating CI/CD configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .github/workflows/ci.yml
+print_status "Updating CI/CD configuration with repository name '$REPO_NAME'..."
+sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .github/workflows/ci.yml
 sed -i.bak "s|GCP_PROJECT_ID|$GCP_PROJECT_ID|g" .github/workflows/ci.yml
 sed -i.bak "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
 
 # Update Chart.yaml
-print_status "Updating Helm Chart configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" helm/grpc-service/Chart.yaml
+print_status "Updating Helm Chart configuration with repository name '$REPO_NAME'..."
+sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" helm/grpc-service/Chart.yaml
 sed -i.bak "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
 sed -i.bak "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
 
 # Update golangci-lint configuration
-print_status "Updating golangci-lint configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .golangci.yml
+print_status "Updating golangci-lint configuration with repository name '$REPO_NAME'..."
+sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .golangci.yml
 
 # Update deployment documentation
 print_status "Updating deployment documentation with project name '$PROJECT_NAME'..."
@@ -192,14 +201,16 @@ go mod tidy
 echo ""
 print_status "Customization complete! 🎉"
 echo ""
-print_info "Summary of changes made with project name '$PROJECT_NAME':"
-echo "  ✅ Go module path: github.com/$GITHUB_USER/$PROJECT_NAME"
+print_info "Summary of changes made:"
+echo "  ✅ Go module path: github.com/$GITHUB_USER/$REPO_NAME"
+echo "  ✅ Project name: $PROJECT_NAME (for Docker, K8s, infrastructure)"
+echo "  ✅ Repository name: $REPO_NAME (for GitHub, imports)"
 echo "  ✅ Docker images: $PROJECT_NAME"
 echo "  ✅ Kubernetes services: $PROJECT_NAME"
 echo "  ✅ Infrastructure resources: $PROJECT_NAME-*"
 echo "  ✅ Helm charts: $PROJECT_NAME"
-echo "  ✅ Protocol buffers: $PROJECT_NAME"
-echo "  ✅ CI/CD workflows: $PROJECT_NAME"
+echo "  ✅ Protocol buffers: $REPO_NAME"
+echo "  ✅ CI/CD workflows: $REPO_NAME"
 echo ""
 print_info "Next steps:"
 echo "1. Review the changes: git diff"
