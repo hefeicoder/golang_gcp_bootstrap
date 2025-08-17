@@ -5,7 +5,7 @@ metadata:
 
 build:
   artifacts:
-    - image: test-backend
+    - image: example-backend
       docker:
         dockerfile: Dockerfile
         context: .
@@ -23,12 +23,12 @@ build:
 deploy:
   helm:
     releases:
-      - name: test-backend
-        chartPath: helm/test-backend
+      - name: example-backend
+        chartPath: helm/grpc-service
         valuesFiles:
-          - helm/test-backend/values.yaml
+          - helm/grpc-service/values.yaml
         setValues:
-          image.repository: test-backend
+          image.repository: example-backend
           image.tag: latest
           replicaCount: 2
           autoscaling.enabled: false
@@ -39,16 +39,16 @@ deploy:
 
 portForward:
   - resourceType: service
-    resourceName: test-backend
+    resourceName: example-backend
     port: 9090
     localPort: 9090
   - resourceType: service
-    resourceName: test-backend
+    resourceName: example-backend
     port: 8080
     localPort: 8080
 
 test:
-  - image: test-backend
+  - image: example-backend
     structureTests:
       - ./test/structure/*.yaml
     customTests:

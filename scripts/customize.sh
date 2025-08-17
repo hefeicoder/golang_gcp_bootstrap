@@ -125,7 +125,8 @@ sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/
 # Update proto files
 print_status "Updating protocol buffer files with repository name '$REPO_NAME'..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
-sed -i.bak "s|buf.build/hefeicoder/golang-grpc-gke|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
+# Update buf.yaml with new project name
+sed -i.bak "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
@@ -170,18 +171,25 @@ sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
 
 # Update Skaffold configuration
 print_status "Updating Skaffold configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|test-backend|$PROJECT_NAME|g" skaffold.yaml
+# Replace the service name in skaffold.yaml (more targeted approach)
+sed -i.bak "/^      - name:/s/name: .*/name: $PROJECT_NAME/" skaffold.yaml
+sed -i.bak "/^        image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
+sed -i.bak "/^          image\.repository:/s/repository: .*/repository: $PROJECT_NAME/" skaffold.yaml
+sed -i.bak "/^    resourceName:/s/resourceName: .*/resourceName: $PROJECT_NAME/" skaffold.yaml
+# Replace build artifacts image
+sed -i.bak "/^    - image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
+# Replace test image
+sed -i.bak "/^  - image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
 
 # Update Makefile
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."
-sed -i.bak "s|test-backend|$PROJECT_NAME|g" Makefile
+# Replace IMAGE_NAME variable
+sed -i.bak "s|IMAGE_NAME := .*|IMAGE_NAME := $PROJECT_NAME|g" Makefile
+# Replace helm template command
+sed -i.bak "s|helm template .* helm/grpc-service|helm template $PROJECT_NAME helm/grpc-service|g" Makefile
 
-# Rename Helm chart directory
-print_status "Renaming Helm chart directory..."
-if [ -d "helm/grpc-service" ]; then
-    mv helm/grpc-service "helm/$PROJECT_NAME"
-    print_info "Renamed helm/grpc-service to helm/$PROJECT_NAME"
-fi
+# Note: Helm chart directory stays as 'grpc-service' for consistency
+# Only the references in configuration files are updated
 
 # Clean up temporary .bak files created by sed
 print_status "Cleaning up temporary files..."

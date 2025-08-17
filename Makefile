@@ -1,6 +1,6 @@
 # Variables
 PROJECT_NAME := golang-gcp-bootstrap
-IMAGE_NAME := test-backend
+IMAGE_NAME := example-backend
 # Use free registry to avoid costs
 REGISTRY ?= docker.io
 PROJECT_ID ?= your-project-id
@@ -153,13 +153,13 @@ proto-breaking: ## Check for breaking changes in protocol buffers
 .PHONY: helm-lint
 helm-lint: ## Lint Helm charts
 	@echo "$(YELLOW)Linting Helm charts...$(NC)"
-	helm lint helm/test-backend
+	helm lint helm/grpc-service
 	@echo "$(GREEN)Helm linting complete!$(NC)"
 
 .PHONY: helm-template
 helm-template: ## Template Helm charts
 	@echo "$(YELLOW)Templating Helm charts...$(NC)"
-	helm template test-backend helm/test-backend
+	helm template example-backend helm/grpc-service
 	@echo "$(GREEN)Helm templating complete!$(NC)"
 
 .PHONY: install-tools
