@@ -52,6 +52,7 @@ logs/
 .env.dev
 .env.staging
 .env.prod
+.env.backup.*
 
 # Local configuration files
 *.local.yaml

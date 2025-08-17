@@ -12,6 +12,21 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}🔧 Setting up Local Configuration${NC}"
 echo "======================================"
 
+# Function to get value from .env file
+get_env_value() {
+    local key="$1"
+    local default="$2"
+    
+    if [ -f .env ]; then
+        local value=$(grep "^${key}=" .env | cut -d'=' -f2- | tr -d '"' | tr -d "'")
+        if [ ! -z "$value" ]; then
+            echo "$value"
+            return
+        fi
+    fi
+    echo "$default"
+}
+
 # Function to prompt for input with default
 prompt_with_default() {
     local prompt="$1"
@@ -28,15 +43,30 @@ prompt_with_default() {
     fi
 }
 
-# Get user configuration
+# Check if .env already exists
+if [ -f .env ]; then
+    echo -e "${YELLOW}📁 Found existing .env file. Reading current values as defaults...${NC}"
+    EXISTING_ENV=true
+else
+    echo -e "${YELLOW}📝 Creating new .env file...${NC}"
+    EXISTING_ENV=false
+fi
+
+# Get user configuration with defaults from .env if it exists
 echo -e "${YELLOW}Let's set up your local development environment...${NC}"
 
-prompt_with_default "What's your GCP project ID?" "your-project-id" GCP_PROJECT_ID
-prompt_with_default "What GCP region do you want to use?" "us-central1" GCP_REGION
-prompt_with_default "What's your domain name?" "your-domain.com" DOMAIN_NAME
-prompt_with_default "What Docker registry do you want to use?" "gcr.io" DOCKER_REGISTRY
+prompt_with_default "What's your GCP project ID?" "$(get_env_value 'GCP_PROJECT_ID' 'your-project-id')" GCP_PROJECT_ID
+prompt_with_default "What GCP region do you want to use?" "$(get_env_value 'GCP_REGION' 'us-central1')" GCP_REGION
+prompt_with_default "What's your domain name?" "$(get_env_value 'DOMAIN_NAME' 'your-domain.com')" DOMAIN_NAME
+prompt_with_default "What Docker registry do you want to use?" "$(get_env_value 'DOCKER_REGISTRY' 'gcr.io')" DOCKER_REGISTRY
 
 # Create .env file
+if [ "$EXISTING_ENV" = true ]; then
+    echo -e "${YELLOW}Backing up existing .env file...${NC}"
+    cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
+    echo -e "${GREEN}✅ Backup created${NC}"
+fi
+
 echo -e "${YELLOW}Creating .env file...${NC}"
 cat > .env << EOF
 # Local development configuration
