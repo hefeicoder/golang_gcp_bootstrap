@@ -164,17 +164,18 @@ echo 'export DOMAIN_NAME="your-domain.com"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-#### **Method 4: Local Pulumi Configuration**
+#### **Method 4: Infrastructure Configuration**
 
-Store sensitive data in Pulumi (encrypted):
+Store infrastructure settings locally:
 
 ```bash
-# Set Pulumi configuration (encrypted)
-cd infrastructure
-pulumi config set gcp:project your-project-id --secret
-pulumi config set gcp:region us-central1
-pulumi config set domain-name your-domain.com --secret
-pulumi config set environment dev
+# Create infrastructure configuration
+mkdir -p infrastructure
+cat > infrastructure/config.env << EOF
+CLUSTER_NAME=grpc-cluster-dev
+ZONE_NAME=grpc-zone
+IP_NAME=grpc-external-ip
+EOF
 ```
 
 #### **Method 5: Local Helm Values**
@@ -264,9 +265,18 @@ kind create cluster  # Free local cluster
      --display-name="Development User"
    ```
 
-### 7. Deploy
+### 7. Deploy Infrastructure
 ```bash
-# Deploy infrastructure and application
+# Deploy infrastructure using gcloud
+make deploy-infrastructure
+
+# Or deploy manually
+./scripts/deploy-infrastructure.sh
+```
+
+### 8. Deploy Application
+```bash
+# Deploy application using Skaffold
 make deploy-dev
 ```
 

@@ -10,7 +10,7 @@ Before you begin, ensure you have the following tools installed:
 - [Docker](https://docs.docker.com/get-docker/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-- [Pulumi CLI](https://www.pulumi.com/docs/install/)
+
 - [Helm CLI](https://helm.sh/docs/intro/install/)
 - [Skaffold CLI](https://skaffold.dev/docs/install/)
 - [Buf CLI](https://docs.buf.build/installation)
@@ -58,22 +58,23 @@ gcloud services enable dns.googleapis.com
 # Note: cloudbuild.googleapis.com is NOT needed - we use local builds
 ```
 
-### 4. Configure Pulumi
+### 4. Deploy Infrastructure
 
 ```bash
-cd infrastructure
+# Deploy infrastructure using gcloud
+make deploy-infrastructure
 
-# Pulumi configuration is already set up by setup-local-config.sh
-# You can verify or modify if needed:
-pulumi config get gcp:project
-pulumi config get gcp:region
-pulumi config get domain-name
-
-# Login to Pulumi (if using Pulumi Cloud)
-pulumi login
+# Or deploy manually
+./scripts/deploy-infrastructure.sh
 ```
 
-### 5. Deploy Infrastructure
+This will create:
+- GKE cluster with autoscaling (e2-micro, FREE)
+- DNS zone and managed SSL certificates
+- Load balancer with external IP
+- Kubernetes resources via Helm
+
+### 5. Deploy Application
 
 ```bash
 # Deploy the entire infrastructure
@@ -99,6 +100,16 @@ make dev
 # Or deploy to specific environment
 make deploy-staging
 make deploy-prod
+```
+
+### 7. Cleanup (Optional)
+
+```bash
+# Clean up infrastructure when done
+make cleanup-infrastructure
+
+# Or cleanup manually
+./scripts/cleanup-infrastructure.sh
 ```
 
 ## Development Workflow

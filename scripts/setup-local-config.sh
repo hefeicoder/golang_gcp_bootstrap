@@ -158,25 +158,20 @@ EOF
 
 echo -e "${GREEN}✅ Created ~/.config/golang-grpc-bootstrap/config.env${NC}"
 
-# Set up Pulumi configuration
-echo -e "${YELLOW}Setting up Pulumi configuration...${NC}"
-cd infrastructure
+# Create infrastructure configuration
+echo -e "${YELLOW}Creating infrastructure configuration...${NC}"
+mkdir -p infrastructure
 
-# Check if Pulumi is initialized
-if [ ! -f "Pulumi.yaml" ]; then
-    echo -e "${YELLOW}Initializing Pulumi...${NC}"
-    pulumi new gcp-go --yes --name golang-grpc-bootstrap --description "Go gRPC Bootstrap Infrastructure"
-fi
+cat > infrastructure/config.env << EOF
+# Infrastructure configuration
+# Generated on $(date)
 
-# Set configuration
-pulumi config set gcp:project "$GCP_PROJECT_ID"
-pulumi config set gcp:region "$GCP_REGION"
-pulumi config set domain-name "$DOMAIN_NAME" --secret
-pulumi config set environment dev
+CLUSTER_NAME=grpc-cluster-${ENVIRONMENT:-dev}
+ZONE_NAME=grpc-zone
+IP_NAME=grpc-external-ip
+EOF
 
-cd ..
-
-echo -e "${GREEN}✅ Set up Pulumi configuration${NC}"
+echo -e "${GREEN}✅ Infrastructure configuration ready${NC}"
 
 # Create shell profile integration
 echo -e "${YELLOW}Setting up shell profile integration...${NC}"

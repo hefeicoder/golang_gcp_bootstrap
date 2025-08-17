@@ -87,6 +87,18 @@ dev: ## Start development environment with Skaffold
 	skaffold dev --profile=dev
 	@echo "$(GREEN)Development environment stopped!$(NC)"
 
+.PHONY: deploy-infrastructure
+deploy-infrastructure: ## Deploy infrastructure using gcloud
+	@echo "$(YELLOW)Deploying infrastructure...$(NC)"
+	./scripts/deploy-infrastructure.sh
+	@echo "$(GREEN)Infrastructure deployment complete!$(NC)"
+
+.PHONY: cleanup-infrastructure
+cleanup-infrastructure: ## Clean up infrastructure
+	@echo "$(YELLOW)Cleaning up infrastructure...$(NC)"
+	./scripts/cleanup-infrastructure.sh
+	@echo "$(GREEN)Infrastructure cleanup complete!$(NC)"
+
 .PHONY: deploy-dev
 deploy-dev: ## Deploy to development environment
 	@echo "$(YELLOW)Deploying to development...$(NC)"
