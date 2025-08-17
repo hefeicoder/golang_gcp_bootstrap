@@ -38,7 +38,7 @@ cd golang-grpc-gke
 # - .env file with your local settings
 # - helm/grpc-service/values.local.yaml for local Helm overrides
 # - ~/.config/golang-grpc-bootstrap/config.env for shell integration
-# - Pulumi configuration for infrastructure
+# - Infrastructure configuration files
 
 # Load your configuration
 source .env
@@ -81,8 +81,7 @@ This will create:
 make deploy
 
 # Or deploy manually
-cd infrastructure
-pulumi up --yes
+./scripts/deploy-infrastructure.sh
 ```
 
 This will create:
@@ -240,18 +239,20 @@ The application exposes Prometheus metrics at `/metrics`. You can:
 
 ### Common Issues
 
-#### 1. Pulumi Deployment Fails
+#### 1. Infrastructure Deployment Fails
 
 ```bash
-# Check Pulumi state
-pulumi stack
+# Check cluster status
+gcloud container clusters describe grpc-cluster-dev --region=us-central1
 
-# View detailed logs
-pulumi up --yes --verbose=3
+# Check cluster logs
+gcloud container clusters get-credentials grpc-cluster-dev --region=us-central1
+kubectl get nodes
+kubectl get pods
 
-# Destroy and recreate
-pulumi destroy --yes
-pulumi up --yes
+# Recreate infrastructure
+make cleanup-infrastructure
+make deploy-infrastructure
 ```
 
 #### 2. Kubernetes Pods Not Starting
@@ -379,7 +380,7 @@ helm upgrade grpc-service helm/grpc-service --set replicaCount=5
 
 1. **Application Data**: Use persistent volumes with regular snapshots
 2. **Configuration**: Store in Git with version control
-3. **Infrastructure**: Pulumi state is versioned and backed up
+3. **Infrastructure**: Infrastructure scripts are versioned and backed up
 
 ### Recovery Procedures
 
@@ -388,7 +389,7 @@ helm upgrade grpc-service helm/grpc-service --set replicaCount=5
 kubectl apply -f backup/
 
 # Recreate infrastructure
-pulumi up --yes
+make deploy-infrastructure
 
 # Redeploy application
 skaffold run --profile=prod

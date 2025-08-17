@@ -94,7 +94,7 @@ This will create:
 - `.env` file with your local settings
 - `helm/grpc-service/values.local.yaml` for local Helm overrides
 - `~/.config/golang-grpc-bootstrap/config.env` for shell integration
-- Pulumi configuration for infrastructure
+- `infrastructure/config.env` for infrastructure settings
 
 **Benefits:**
 - ✅ **No secrets in repo** - sensitive data stays local
@@ -385,9 +385,7 @@ If you need production deployment, use these settings:
 
 ```bash
 # Deploy with cost optimizations
-cd infrastructure
-pulumi config set environment prod
-pulumi up --yes
+make deploy-infrastructure
 
 # The cluster will use:
 # - e2-micro machines (FREE in GCP free tier!)
@@ -419,8 +417,7 @@ If costs get out of control:
 
 ```bash
 # Stop all resources
-cd infrastructure
-pulumi destroy --yes
+make cleanup-infrastructure
 
 # Or just scale down
 kubectl scale deployment --replicas=0 --all
