@@ -99,7 +99,7 @@ cp go.mod go.mod.backup
 cp proto/api/grpc_service.proto proto/api/grpc_service.proto.backup
 cp proto/buf.yaml proto/buf.yaml.backup
 cp proto/buf.gen.yaml proto/buf.gen.yaml.backup
-cp infrastructure/Pulumi.yaml infrastructure/Pulumi.yaml.backup
+
 cp helm/grpc-service/values.yaml helm/grpc-service/values.yaml.backup
 cp .github/workflows/ci.yml .github/workflows/ci.yml.backup
 
@@ -120,8 +120,9 @@ find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grp
 
 # Update infrastructure files
 print_status "Updating infrastructure configuration..."
-sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" infrastructure/Pulumi.yaml
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" infrastructure/main.go
+if [ -f infrastructure/config.env ]; then
+    sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" infrastructure/config.env
+fi
 
 # Update Helm values
 print_status "Updating Helm configuration..."

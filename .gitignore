@@ -67,8 +67,7 @@ values.local.yml
 local/
 dev-config/
 
-# Pulumi
-.pulumi/
+
 
 # Kubernetes
 *.kubeconfig

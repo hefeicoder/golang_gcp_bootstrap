@@ -120,13 +120,13 @@ deploy-prod: ## Deploy to production environment
 .PHONY: deploy
 deploy: ## Deploy infrastructure and application
 	@echo "$(YELLOW)Deploying infrastructure and application...$(NC)"
-	cd infrastructure && pulumi up --yes
+	./scripts/deploy-infrastructure.sh
 	@echo "$(GREEN)Deployment complete!$(NC)"
 
 .PHONY: destroy
 destroy: ## Destroy infrastructure
 	@echo "$(RED)Destroying infrastructure...$(NC)"
-	cd infrastructure && pulumi destroy --yes
+	./scripts/cleanup-infrastructure.sh
 	@echo "$(GREEN)Infrastructure destroyed!$(NC)"
 
 .PHONY: clean

@@ -71,7 +71,7 @@ make deploy-dev
 | **Language** | Go 1.21+ | Backend service language |
 | **gRPC** | ConnectRPC | Modern gRPC with HTTP/2 support |
 | **Protocol Buffers** | Buf | Schema definition and code generation |
-| **Infrastructure** | Pulumi (Go) | Infrastructure as Code |
+| **Infrastructure** | gcloud scripts | Infrastructure deployment |
 | **Container Orchestration** | GKE | Kubernetes cluster |
 | **Package Management** | Helm | Kubernetes manifests |
 | **Development** | Skaffold | Local-to-GKE development loop |
@@ -120,7 +120,7 @@ golang_gcp_bootstrap/
 │   ├── buf.yaml              # Buf configuration
 │   └── buf.gen.yaml          # Code generation config
 ├── gen/                       # Generated Go code (gitignored)
-├── infrastructure/            # Pulumi infrastructure code
+├── infrastructure/            # Infrastructure configuration
 ├── helm/                      # Helm charts for deployment
 ├── .github/workflows/         # CI/CD pipelines
 ├── scripts/                   # Utility scripts
@@ -177,7 +177,7 @@ make docker-push
 ```bash
 # Deploy GKE cluster and infrastructure
 cd infrastructure
-pulumi up
+make deploy-infrastructure
 
 # Configure kubectl
 gcloud container clusters get-credentials YOUR_CLUSTER_NAME
@@ -216,7 +216,7 @@ The GitHub Actions workflow includes:
 
 3. **Deploy Stage**
    - Automatic deployment to dev/staging/prod
-   - Infrastructure updates with Pulumi
+   - Infrastructure deployment with gcloud scripts
    - Helm chart deployment
 
 ## 🎨 Customization Guide
@@ -271,7 +271,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - [Buf](https://buf.build/) for modern protobuf tooling
 - [ConnectRPC](https://connect.build/) for gRPC over HTTP/2
-- [Pulumi](https://www.pulumi.com/) for infrastructure as code
+- [gcloud CLI](https://cloud.google.com/sdk/docs/install) for infrastructure deployment
 - [Skaffold](https://skaffold.dev/) for development workflow
 - [Helm](https://helm.sh/) for Kubernetes package management
 
