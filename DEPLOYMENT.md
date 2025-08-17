@@ -50,7 +50,7 @@ source .env
 
 ```bash
 # Authenticate with GCP
-gcloud auth application-default login --no-browser
+gcloud auth application-default login
 gcloud config set project $GCP_PROJECT_ID
 
 # Enable required APIs

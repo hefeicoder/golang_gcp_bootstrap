@@ -71,7 +71,7 @@ gcloud init
 
 ```bash
 # Authenticate with Google Cloud
-gcloud auth application-default login --no-browser
+gcloud auth application-default login
 
 # Set your project
 gcloud config set project YOUR_PROJECT_ID
