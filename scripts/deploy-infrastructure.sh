@@ -61,35 +61,25 @@ gcloud services enable dns.googleapis.com
 echo -e "${YELLOW}Creating GKE cluster...${NC}"
 
 # Check if cluster already exists
-if gcloud container clusters describe $CLUSTER_NAME --region=$GCP_REGION --project=$GCP_PROJECT_ID &>/dev/null; then
-    echo -e "${YELLOW}⚠️  Cluster $CLUSTER_NAME already exists. Updating...${NC}"
-    gcloud container clusters update $CLUSTER_NAME \
-        --region=$GCP_REGION \
-        --project=$GCP_PROJECT_ID \
-        --enable-autoscaling \
-        --min-nodes=1 \
-        --max-nodes=3
+if gcloud container clusters describe $CLUSTER_NAME --zone=$GCP_REGION-a --project=$GCP_PROJECT_ID &>/dev/null; then
+    echo -e "${YELLOW}⚠️  Cluster $CLUSTER_NAME already exists. Skipping creation...${NC}"
 else
     echo -e "${YELLOW}Creating new cluster $CLUSTER_NAME...${NC}"
     gcloud container clusters create $CLUSTER_NAME \
         --project=$GCP_PROJECT_ID \
-        --region=$GCP_REGION \
+        --zone=$GCP_REGION-a \
         --num-nodes=1 \
         --machine-type=e2-micro \
         --disk-size=20 \
-        --enable-autoscaling \
-        --min-nodes=1 \
-        --max-nodes=3 \
-        --enable-workload-identity \
         --workload-pool=$GCP_PROJECT_ID.svc.id.goog \
-        --addons=HttpLoadBalancing,HorizontalPodAutoscaling \
+        --addons=HttpLoadBalancing \
         --release-channel=regular
 fi
 
 # Get cluster credentials
 echo -e "${YELLOW}Getting cluster credentials...${NC}"
 gcloud container clusters get-credentials $CLUSTER_NAME \
-    --region=$GCP_REGION \
+    --zone=$GCP_REGION-a \
     --project=$GCP_PROJECT_ID
 
 # Create DNS zone (if domain is provided)
@@ -115,8 +105,7 @@ echo -e "${YELLOW}Creating external IP...${NC}"
 if ! gcloud compute addresses describe $IP_NAME --region=$GCP_REGION --project=$GCP_PROJECT_ID &>/dev/null; then
     gcloud compute addresses create $IP_NAME \
         --project=$GCP_PROJECT_ID \
-        --region=$GCP_REGION \
-        --address-type=EXTERNAL
+        --region=$GCP_REGION
 else
     echo -e "${YELLOW}⚠️  External IP $IP_NAME already exists.${NC}"
 fi

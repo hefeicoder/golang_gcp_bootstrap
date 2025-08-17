@@ -45,9 +45,9 @@ echo -e "${YELLOW}Starting cleanup...${NC}"
 
 # Delete GKE cluster
 echo -e "${YELLOW}Deleting GKE cluster...${NC}"
-if gcloud container clusters describe $CLUSTER_NAME --region=$GCP_REGION --project=$GCP_PROJECT_ID &>/dev/null; then
+if gcloud container clusters describe $CLUSTER_NAME --zone=$GCP_REGION-a --project=$GCP_PROJECT_ID &>/dev/null; then
     gcloud container clusters delete $CLUSTER_NAME \
-        --region=$GCP_REGION \
+        --zone=$GCP_REGION-a \
         --project=$GCP_PROJECT_ID \
         --quiet
     echo -e "${GREEN}✅ Cluster deleted${NC}"
