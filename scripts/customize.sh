@@ -148,6 +148,7 @@ sed -i.bak "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
 print_status "Updating Helm Chart configuration..."
 sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" helm/grpc-service/Chart.yaml
 sed -i.bak "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
+sed -i.bak "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
 
 # Update golangci-lint configuration
 print_status "Updating golangci-lint configuration..."
