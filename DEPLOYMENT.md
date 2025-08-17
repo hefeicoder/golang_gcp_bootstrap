@@ -22,7 +22,7 @@ Before you begin, ensure you have the following tools installed:
 ```bash
 # Clone the repository
 git clone <your-repo-url>
-cd golang-grpc-gke
+cd golang-gcp-bootstrap
 
 # Run the local configuration setup script
 ./scripts/setup-local-config.sh

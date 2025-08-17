@@ -1,5 +1,5 @@
 # Variables
-PROJECT_NAME := golang-grpc-gke
+PROJECT_NAME := golang-gcp-bootstrap
 IMAGE_NAME := test-backend
 # Use free registry to avoid costs
 REGISTRY ?= docker.io

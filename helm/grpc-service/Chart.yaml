@@ -9,9 +9,9 @@ keywords:
   - go
   - kubernetes
   - gke
-home: https://github.com/your-org/golang-grpc-gke
+home: https://github.com/hefeicoder/golang_gcp_bootstrap
 sources:
-  - https://github.com/your-org/golang-grpc-gke
+  - https://github.com/hefeicoder/golang_gcp_bootstrap
 maintainers:
-  - name: Your Name
+  - name: hefeicoder
     email: your-email@example.com

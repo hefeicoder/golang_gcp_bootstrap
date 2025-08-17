@@ -19,7 +19,7 @@ linters-settings:
   lll:
     line-length: 140
   goimports:
-    local-prefixes: github.com/your-org/golang-grpc-gke
+    local-prefixes: github.com/hefeicoder/golang_gcp_bootstrap
   gocritic:
     enabled-tags:
       - diagnostic

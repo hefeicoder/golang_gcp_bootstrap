@@ -1,7 +1,7 @@
 apiVersion: skaffold/v2beta29
 kind: Config
 metadata:
-  name: golang-grpc-gke
+  name: golang-gcp-bootstrap
 
 build:
   artifacts:
