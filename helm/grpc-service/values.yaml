@@ -1,5 +1,5 @@
-# Default values for test-backend
-replicaCount: 3
+# Default values for test-backend (Cost-optimized)
+replicaCount: 1  # Reduced from 3 to 1 for cost savings
 
 image:
   repository: test-backend
@@ -27,7 +27,7 @@ service:
   annotations: {}
 
 ingress:
-  enabled: false
+  enabled: false  # Disabled to avoid load balancer costs
   className: ""
   annotations: {}
   hosts:
@@ -39,16 +39,16 @@ ingress:
 
 resources:
   limits:
-    cpu: 1000m
-    memory: 1Gi
+    cpu: 500m    # Reduced from 1000m to 500m
+    memory: 512Mi # Reduced from 1Gi to 512Mi
   requests:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 100m    # Reduced from 500m to 100m
+    memory: 128Mi # Reduced from 512Mi to 128Mi
 
 autoscaling:
-  enabled: true
-  minReplicas: 2
-  maxReplicas: 10
+  enabled: false  # Disabled to avoid scaling costs
+  minReplicas: 1  # Reduced from 2 to 1
+  maxReplicas: 3  # Reduced from 10 to 3
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 

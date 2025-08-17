@@ -1,7 +1,8 @@
 # Variables
 PROJECT_NAME := golang-grpc-gke
 IMAGE_NAME := test-backend
-REGISTRY ?= gcr.io
+# Use free registry to avoid costs
+REGISTRY ?= docker.io
 PROJECT_ID ?= your-project-id
 VERSION ?= $(shell git describe --tags --always --dirty)
 GOOS ?= $(shell go env GOOS)

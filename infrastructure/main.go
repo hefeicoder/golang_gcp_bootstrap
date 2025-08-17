@@ -103,10 +103,10 @@ func createGKECluster(ctx *pulumi.Context, project, region, environment string) 
 		Project:  pulumi.String(project),
 		Location: pulumi.String(region),
 		Cluster:  cluster.Name,
-		NodeCount: pulumi.Int(3),
+		NodeCount: pulumi.Int(1), // Reduced from 3 to 1 for cost savings
 		NodeConfig: &gcp.Container.NodePoolNodeConfigArgs{
-			MachineType: pulumi.String("e2-standard-2"),
-			DiskSizeGb:  pulumi.Int(50),
+			MachineType: pulumi.String("e2-micro"), // Changed from e2-standard-2 to e2-micro (cheaper)
+			DiskSizeGb:  pulumi.Int(20), // Reduced from 50GB to 20GB
 			DiskType:    pulumi.String("pd-standard"),
 			ImageType:   pulumi.String("COS_CONTAINERD"),
 			OauthScopes: pulumi.StringArray{
@@ -121,7 +121,7 @@ func createGKECluster(ctx *pulumi.Context, project, region, environment string) 
 		},
 		Autoscaling: &gcp.Container.NodePoolAutoscalingArgs{
 			MinNodeCount: pulumi.Int(1),
-			MaxNodeCount: pulumi.Int(10),
+			MaxNodeCount: pulumi.Int(3), // Reduced from 10 to 3 for cost savings
 		},
 		Management: &gcp.Container.NodePoolManagementArgs{
 			AutoRepair:  pulumi.Bool(true),

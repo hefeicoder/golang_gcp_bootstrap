@@ -11,10 +11,14 @@ build:
         context: .
   tagPolicy:
     gitCommit: {}
+  # Using local builds to avoid Cloud Build costs
   local:
     push: false
-  googleCloudBuild:
-    projectId: your-project-id
+    useDockerCLI: true
+    useBuildkit: true
+  # Commented out to avoid Cloud Build costs
+  # googleCloudBuild:
+  #   projectId: your-project-id
 
 deploy:
   helm:
