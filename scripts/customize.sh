@@ -44,6 +44,12 @@ echo "Please provide the following information to customize your project:"
 echo ""
 
 echo "📝 Project Information:"
+echo "   Project name will be used for:"
+echo "   • Go module path (github.com/USERNAME/PROJECT_NAME)"
+echo "   • Docker image names"
+echo "   • Kubernetes service names"
+echo "   • Infrastructure resource names"
+echo "   • Helm chart names"
 read -p "Enter your project name (e.g., my-backend): " PROJECT_NAME
 read -p "Enter your domain name (e.g., api.mycompany.com): " DOMAIN_NAME
 
@@ -113,62 +119,62 @@ cp .golangci.yml .golangci.yml.backup
 cp DEPLOYMENT.md DEPLOYMENT.md.backup
 
 # Update go.mod
-print_status "Updating go.mod..."
+print_status "Updating go.mod with project name '$PROJECT_NAME'..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$PROJECT_NAME|g" go.mod
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" go.mod
 
 # Update proto files
-print_status "Updating protocol buffer files..."
+print_status "Updating protocol buffer files with project name '$PROJECT_NAME'..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
 sed -i.bak "s|buf.build/hefeicoder/golang-grpc-gke|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
-print_status "Updating Go source files..."
+print_status "Updating Go source files with project name '$PROJECT_NAME'..."
 find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$PROJECT_NAME|g" {} \;
 
 # Update infrastructure files
-print_status "Updating infrastructure configuration..."
+print_status "Updating infrastructure configuration with project name '$PROJECT_NAME'..."
 if [ -f infrastructure/config.env ]; then
     sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" infrastructure/config.env
 fi
 
 # Update Helm values
-print_status "Updating Helm configuration..."
+print_status "Updating Helm configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" helm/grpc-service/values.yaml
 sed -i.bak "s|your-domain.com|$DOMAIN_NAME|g" helm/grpc-service/values.yaml
 
 # Update CI/CD workflow
-print_status "Updating CI/CD configuration..."
+print_status "Updating CI/CD configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .github/workflows/ci.yml
 sed -i.bak "s|GCP_PROJECT_ID|$GCP_PROJECT_ID|g" .github/workflows/ci.yml
 sed -i.bak "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
 
 # Update Chart.yaml
-print_status "Updating Helm Chart configuration..."
+print_status "Updating Helm Chart configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" helm/grpc-service/Chart.yaml
 sed -i.bak "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
 sed -i.bak "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
 
 # Update golangci-lint configuration
-print_status "Updating golangci-lint configuration..."
+print_status "Updating golangci-lint configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .golangci.yml
 
 # Update deployment documentation
-print_status "Updating deployment documentation..."
+print_status "Updating deployment documentation with project name '$PROJECT_NAME'..."
 sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" DEPLOYMENT.md
 
 # Update Docker files
-print_status "Updating Docker configuration..."
+print_status "Updating Docker configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
 
 # Update Skaffold configuration
-print_status "Updating Skaffold configuration..."
+print_status "Updating Skaffold configuration with project name '$PROJECT_NAME'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" skaffold.yaml
 
 # Update Makefile
-print_status "Updating Makefile..."
+print_status "Updating Makefile with project name '$PROJECT_NAME'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Makefile
 
 # Clean up backup files
@@ -185,6 +191,15 @@ go mod tidy
 
 echo ""
 print_status "Customization complete! 🎉"
+echo ""
+print_info "Summary of changes made with project name '$PROJECT_NAME':"
+echo "  ✅ Go module path: github.com/$GITHUB_USER/$PROJECT_NAME"
+echo "  ✅ Docker images: $PROJECT_NAME"
+echo "  ✅ Kubernetes services: $PROJECT_NAME"
+echo "  ✅ Infrastructure resources: $PROJECT_NAME-*"
+echo "  ✅ Helm charts: $PROJECT_NAME"
+echo "  ✅ Protocol buffers: $PROJECT_NAME"
+echo "  ✅ CI/CD workflows: $PROJECT_NAME"
 echo ""
 print_info "Next steps:"
 echo "1. Review the changes: git diff"
