@@ -61,13 +61,13 @@ gcloud services enable dns.googleapis.com
 echo -e "${YELLOW}Creating GKE cluster...${NC}"
 
 # Check if cluster already exists
-if gcloud container clusters describe $CLUSTER_NAME --zone=$GCP_REGION-a --project=$GCP_PROJECT_ID &>/dev/null; then
+if gcloud container clusters describe $CLUSTER_NAME --zone=us-central1-c --project=$GCP_PROJECT_ID &>/dev/null; then
     echo -e "${YELLOW}⚠️  Cluster $CLUSTER_NAME already exists. Skipping creation...${NC}"
 else
     echo -e "${YELLOW}Creating new cluster $CLUSTER_NAME...${NC}"
     gcloud container clusters create $CLUSTER_NAME \
         --project=$GCP_PROJECT_ID \
-        --zone=$GCP_REGION-a \
+        --zone=us-central1-c \
         --num-nodes=1 \
         --machine-type=e2-micro \
         --disk-size=20 \
@@ -79,7 +79,7 @@ fi
 # Get cluster credentials
 echo -e "${YELLOW}Getting cluster credentials...${NC}"
 gcloud container clusters get-credentials $CLUSTER_NAME \
-    --zone=$GCP_REGION-a \
+    --zone=us-central1-c \
     --project=$GCP_PROJECT_ID
 
 # Create DNS zone (if domain is provided)
