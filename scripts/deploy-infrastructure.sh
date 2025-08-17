@@ -20,6 +20,16 @@ else
     exit 1
 fi
 
+# Load infrastructure configuration
+if [ -f infrastructure/config.env ]; then
+    source infrastructure/config.env
+else
+    echo -e "${YELLOW}⚠️  infrastructure/config.env not found. Using default values.${NC}"
+    CLUSTER_NAME="grpc-cluster-${ENVIRONMENT:-dev}"
+    ZONE_NAME="grpc-zone"
+    IP_NAME="grpc-external-ip"
+fi
+
 # Check prerequisites
 echo -e "${YELLOW}Checking prerequisites...${NC}"
 
@@ -49,7 +59,6 @@ gcloud services enable dns.googleapis.com
 
 # Create GKE cluster
 echo -e "${YELLOW}Creating GKE cluster...${NC}"
-CLUSTER_NAME="grpc-cluster-${ENVIRONMENT:-dev}"
 
 # Check if cluster already exists
 if gcloud container clusters describe $CLUSTER_NAME --region=$GCP_REGION --project=$GCP_PROJECT_ID &>/dev/null; then
@@ -86,7 +95,6 @@ gcloud container clusters get-credentials $CLUSTER_NAME \
 # Create DNS zone (if domain is provided)
 if [ ! -z "$DOMAIN_NAME" ] && [ "$DOMAIN_NAME" != "your-domain.com" ]; then
     echo -e "${YELLOW}Creating DNS zone for $DOMAIN_NAME...${NC}"
-    ZONE_NAME="grpc-zone"
     
     # Check if zone already exists
     if ! gcloud dns managed-zones describe $ZONE_NAME --project=$GCP_PROJECT_ID &>/dev/null; then
@@ -102,7 +110,6 @@ fi
 
 # Create external IP for load balancer (optional)
 echo -e "${YELLOW}Creating external IP...${NC}"
-IP_NAME="grpc-external-ip"
 
 # Check if IP already exists
 if ! gcloud compute addresses describe $IP_NAME --region=$GCP_REGION --project=$GCP_PROJECT_ID &>/dev/null; then

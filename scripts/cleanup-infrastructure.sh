@@ -20,6 +20,16 @@ else
     exit 1
 fi
 
+# Load infrastructure configuration
+if [ -f infrastructure/config.env ]; then
+    source infrastructure/config.env
+else
+    echo -e "${YELLOW}⚠️  infrastructure/config.env not found. Using default values.${NC}"
+    CLUSTER_NAME="grpc-cluster-${ENVIRONMENT:-dev}"
+    ZONE_NAME="grpc-zone"
+    IP_NAME="grpc-external-ip"
+fi
+
 # Confirm deletion
 echo -e "${YELLOW}⚠️  This will delete all infrastructure resources!${NC}"
 read -p "Are you sure you want to continue? (y/N): " -n 1 -r
@@ -29,10 +39,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 0
 fi
 
-# Set variables
-CLUSTER_NAME="grpc-cluster-${ENVIRONMENT:-dev}"
-ZONE_NAME="grpc-zone"
-IP_NAME="grpc-external-ip"
+
 
 echo -e "${YELLOW}Starting cleanup...${NC}"
 

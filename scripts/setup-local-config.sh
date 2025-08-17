@@ -59,6 +59,7 @@ prompt_with_default "What's your GCP project ID?" "$(get_env_value 'GCP_PROJECT_
 prompt_with_default "What GCP region do you want to use?" "$(get_env_value 'GCP_REGION' 'us-central1')" GCP_REGION
 prompt_with_default "What's your domain name?" "$(get_env_value 'DOMAIN_NAME' 'your-domain.com')" DOMAIN_NAME
 prompt_with_default "What Docker registry do you want to use?" "$(get_env_value 'DOCKER_REGISTRY' 'gcr.io')" DOCKER_REGISTRY
+prompt_with_default "What's your project name (for resource naming)?" "$(get_env_value 'PROJECT_NAME' 'grpc-service')" PROJECT_NAME
 
 # Create .env file
 if [ "$EXISTING_ENV" = true ]; then
@@ -101,9 +102,9 @@ K8S_NAMESPACE=default
 K8S_CONTEXT=minikube
 
 # Infrastructure Configuration
-CLUSTER_NAME=grpc-cluster-dev
-ZONE_NAME=grpc-zone
-IP_NAME=grpc-external-ip
+CLUSTER_NAME=${PROJECT_NAME}-cluster-${ENVIRONMENT:-dev}
+ZONE_NAME=${PROJECT_NAME}-dns-zone
+IP_NAME=${PROJECT_NAME}-external-ip
 EOF
 
 echo -e "${GREEN}✅ Created .env file${NC}"
@@ -197,9 +198,9 @@ cat > infrastructure/config.env << EOF
 # Infrastructure configuration
 # Generated on $(date)
 
-CLUSTER_NAME=grpc-cluster-${ENVIRONMENT:-dev}
-ZONE_NAME=grpc-zone
-IP_NAME=grpc-external-ip
+CLUSTER_NAME=${PROJECT_NAME}-cluster-${ENVIRONMENT:-dev}
+ZONE_NAME=${PROJECT_NAME}-dns-zone
+IP_NAME=${PROJECT_NAME}-external-ip
 EOF
 
 echo -e "${GREEN}✅ Infrastructure configuration ready${NC}"
