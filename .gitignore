@@ -45,10 +45,26 @@ Thumbs.db
 *.log
 logs/
 
-# Environment variables
+# Environment variables and local configuration
 .env
 .env.local
 .env.*.local
+.env.dev
+.env.staging
+.env.prod
+
+# Local configuration files
+*.local.yaml
+*.local.yml
+values.local.yaml
+values.local.yml
+
+# Local config directory
+~/.config/golang-grpc-bootstrap/
+
+# Local development overrides
+local/
+dev-config/
 
 # Pulumi
 .pulumi/

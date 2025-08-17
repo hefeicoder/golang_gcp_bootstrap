@@ -1,0 +1,56 @@
+# Local development overrides for Helm
+# Copy this file to values.local.yaml and customize
+
+# Override replica count for local development
+replicaCount: 1
+
+# Reduce resource usage for local development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Local image settings
+image:
+  repository: localhost:5000/test-backend
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Disable autoscaling for local development
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+
+# Local service configuration
+service:
+  type: NodePort  # Use NodePort for local access
+  port: 9090
+  nodePort: 30090  # Access via localhost:30090
+
+# Disable ingress for local development
+ingress:
+  enabled: false
+
+# Local environment variables
+env:
+  - name: GRPC_PORT
+    value: "9090"
+  - name: HEALTH_PORT
+    value: "8080"
+  - name: LOG_LEVEL
+    value: "debug"
+  - name: ENVIRONMENT
+    value: "local"
+
+# Local monitoring (optional)
+monitoring:
+  enabled: false  # Disable for local development
+
+# Local logging
+logging:
+  level: debug
+  format: text  # Use text format for local development

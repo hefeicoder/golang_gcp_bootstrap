@@ -81,10 +81,188 @@ gcloud services enable dns.googleapis.com
 # The project uses local Docker builds instead of Google Cloud Build
 ```
 
-### 6. Configure GitHub Secrets
-Go to your repository Settings → Secrets and add:
-- `GCP_SA_KEY`: Your GCP service account JSON key
+### 6. Set Up Local Configuration (RECOMMENDED)
+
+For **local development**, use local configuration instead of GitHub Secrets:
+
+```bash
+# Run the local configuration setup script
+./scripts/setup-local-config.sh
+```
+
+This will create:
+- `.env` file with your local settings
+- `helm/grpc-service/values.local.yaml` for local Helm overrides
+- `~/.config/golang-grpc-bootstrap/config.env` for shell integration
+- Pulumi configuration for infrastructure
+
+**Benefits:**
+- ✅ **No secrets in repo** - sensitive data stays local
+- ✅ **Easy to manage** - simple environment variables
+- ✅ **Development-friendly** - fast iteration
+- ✅ **Secure** - credentials never leave your machine
+
+### 6b. GitHub Secrets (Alternative for CI/CD)
+
+If you need CI/CD with GitHub Actions, go to your repository Settings → Secrets and add:
 - `GCP_PROJECT_ID`: Your GCP project ID
+
+## 🔐 **Local Configuration Management**
+
+### **Local Configuration (RECOMMENDED)** ⭐
+
+**Best for**: Local development and testing
+
+#### **Method 1: Environment Variables (Simplest)**
+
+Create a local `.env` file (NOT in repo):
+
+```bash
+# Create .env file (add to .gitignore)
+cat > .env << EOF
+GCP_PROJECT_ID=your-project-id
+GCP_REGION=us-central1
+DOMAIN_NAME=your-domain.com
+DOCKER_REGISTRY=gcr.io
+EOF
+
+# Load in your shell
+source .env
+```
+
+#### **Method 2: Local Config Directory**
+
+Create a local config directory:
+
+```bash
+# Create local config directory
+mkdir -p ~/.config/golang-grpc-bootstrap
+
+# Store configuration
+cat > ~/.config/golang-grpc-bootstrap/config.env << EOF
+GCP_PROJECT_ID=your-project-id
+GCP_REGION=us-central1
+DOMAIN_NAME=your-domain.com
+DOCKER_REGISTRY=gcr.io
+EOF
+
+# Load in your shell
+source ~/.config/golang-grpc-bootstrap/config.env
+```
+
+#### **Method 3: Shell Profile Integration**
+
+Add to your `~/.zshrc` or `~/.bashrc`:
+
+```bash
+# Add to your shell profile
+echo 'export GCP_PROJECT_ID="your-project-id"' >> ~/.zshrc
+echo 'export GCP_REGION="us-central1"' >> ~/.zshrc
+echo 'export DOMAIN_NAME="your-domain.com"' >> ~/.zshrc
+
+# Reload shell
+source ~/.zshrc
+```
+
+#### **Method 4: Local Pulumi Configuration**
+
+Store sensitive data in Pulumi (encrypted):
+
+```bash
+# Set Pulumi configuration (encrypted)
+cd infrastructure
+pulumi config set gcp:project your-project-id --secret
+pulumi config set gcp:region us-central1
+pulumi config set domain-name your-domain.com --secret
+pulumi config set environment dev
+```
+
+#### **Method 5: Local Helm Values**
+
+Create local Helm values override:
+
+```bash
+# Create local values file (add to .gitignore)
+cat > helm/grpc-service/values.local.yaml << EOF
+# Local development overrides
+replicaCount: 1
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Local-specific settings
+image:
+  repository: localhost:5000/test-backend
+  tag: "latest"
+EOF
+
+# Use with Helm
+helm install my-app ./helm/grpc-service -f values.local.yaml
+```
+
+### **Local Development Setup (No Secrets Needed)**
+
+For **completely local development**:
+
+```bash
+# 1. Set up local environment
+export GCP_PROJECT_ID="your-project-id"
+export GCP_REGION="us-central1"
+
+# 2. Use local authentication
+gcloud auth application-default login
+gcloud config set project $GCP_PROJECT_ID
+
+# 3. Use local Docker builds
+make dev  # Uses local Docker, no cloud costs
+
+# 4. Use local Kubernetes (optional)
+minikube start  # Free local cluster
+kind create cluster  # Free local cluster
+```
+
+### **Benefits of Local Configuration:**
+
+- ✅ **No secrets in repo** - sensitive data stays local
+- ✅ **Easy to manage** - simple environment variables
+- ✅ **Development-friendly** - fast iteration
+- ✅ **Secure** - credentials never leave your machine
+- ✅ **Flexible** - different configs for different environments
+- ✅ **Version control safe** - no accidental commits
+
+### **Security Best Practices for Local Config:**
+
+1. **Never commit sensitive files**:
+   ```bash
+   # Add to .gitignore
+   echo ".env" >> .gitignore
+   echo "*.local.yaml" >> .gitignore
+   echo "~/.config/golang-grpc-bootstrap/" >> .gitignore
+   ```
+
+2. **Use environment-specific files**:
+   ```bash
+   .env.dev      # Development settings
+   .env.staging  # Staging settings  
+   .env.prod     # Production settings
+   ```
+
+3. **Rotate credentials regularly**:
+   ```bash
+   # Refresh gcloud credentials
+   gcloud auth application-default login
+   ```
+
+4. **Use least privilege**:
+   ```bash
+   # Create development-only service account
+   gcloud iam service-accounts create dev-user \
+     --display-name="Development User"
+   ```
 
 ### 7. Deploy
 ```bash
@@ -241,4 +419,5 @@ kubectl scale deployment --replicas=0 --all
 ## 🔧 Development Workflow
 
 ### Local Development
+```
 ```

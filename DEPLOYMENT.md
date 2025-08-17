@@ -28,36 +28,52 @@ cd golang-grpc-gke
 ./scripts/quickstart.sh
 ```
 
-### 2. Configure GCP
+### 2. Set Up Local Configuration
 
 ```bash
-# Set your GCP project
-export GOOGLE_PROJECT_ID="your-project-id"
-gcloud config set project $GOOGLE_PROJECT_ID
+# Run the local configuration setup script
+./scripts/setup-local-config.sh
+
+# This will create:
+# - .env file with your local settings
+# - helm/grpc-service/values.local.yaml for local Helm overrides
+# - ~/.config/golang-grpc-bootstrap/config.env for shell integration
+# - Pulumi configuration for infrastructure
+
+# Load your configuration
+source .env
+```
+
+### 3. Configure GCP
+
+```bash
+# Authenticate with GCP (no service account keys needed!)
+gcloud auth application-default login
+gcloud config set project $GCP_PROJECT_ID
 
 # Enable required APIs
 gcloud services enable container.googleapis.com
 gcloud services enable compute.googleapis.com
 gcloud services enable dns.googleapis.com
-gcloud services enable cloudbuild.googleapis.com
+# Note: cloudbuild.googleapis.com is NOT needed - we use local builds
 ```
 
-### 3. Configure Pulumi
+### 4. Configure Pulumi
 
 ```bash
 cd infrastructure
 
-# Set Pulumi configuration
-pulumi config set gcp:project $GOOGLE_PROJECT_ID
-pulumi config set gcp:region us-central1
-pulumi config set domain-name your-domain.com
-pulumi config set environment dev
+# Pulumi configuration is already set up by setup-local-config.sh
+# You can verify or modify if needed:
+pulumi config get gcp:project
+pulumi config get gcp:region
+pulumi config get domain-name
 
 # Login to Pulumi (if using Pulumi Cloud)
 pulumi login
 ```
 
-### 4. Deploy Infrastructure
+### 5. Deploy Infrastructure
 
 ```bash
 # Deploy the entire infrastructure
@@ -74,7 +90,7 @@ This will create:
 - Load balancer with external IP
 - Kubernetes resources via Helm
 
-### 5. Deploy Application
+### 6. Deploy Application
 
 ```bash
 # Deploy the application using Skaffold
@@ -87,18 +103,40 @@ make deploy-prod
 
 ## Development Workflow
 
-### Local Development
+### Local Development (RECOMMENDED)
 
 ```bash
 # Start development with hot reload
 make dev
 
 # This will:
-# 1. Build and push Docker image
+# 1. Build Docker image locally (no cloud costs)
 # 2. Deploy to local/remote cluster
 # 3. Start file watching for hot reload
 # 4. Port forward services locally
 ```
+
+### Local Kubernetes (Optional)
+
+For completely local development:
+
+```bash
+# Use minikube (free local cluster)
+minikube start
+make dev
+
+# Or use kind (free local cluster)
+kind create cluster
+make dev
+```
+
+### Benefits of Local Development
+
+- ✅ **No cloud costs** - everything runs locally
+- ✅ **Fast iteration** - no upload/download time
+- ✅ **Secure** - credentials never leave your machine
+- ✅ **Offline capable** - works without internet
+- ✅ **Easy debugging** - direct access to logs and services
 
 ### Testing
 
@@ -347,6 +385,16 @@ skaffold run --profile=prod
 
 ## Cost Optimization
 
+### Current Cost-Optimized Configuration
+
+This project is **pre-configured for minimal costs**:
+
+- ✅ **GKE**: e2-micro machines (FREE in GCP free tier)
+- ✅ **Nodes**: 1 node (down from 3 = saves ~$156/month)
+- ✅ **Resources**: Optimized CPU/memory limits
+- ✅ **Builds**: Local Docker builds (no Cloud Build costs)
+- ✅ **Registry**: Local builds (no GCR storage costs)
+
 ### Resource Optimization
 
 1. **Right-size requests/limits**: Monitor actual usage and adjust
@@ -363,6 +411,17 @@ gcloud billing accounts list
 kubectl top nodes
 kubectl top pods
 ```
+
+### Cost Breakdown
+
+| Component | Cost |
+|-----------|------|
+| **GKE Nodes** | $0/month (FREE with e2-micro) |
+| **Load Balancer** | $0/month (disabled by default) |
+| **Cloud Build** | $0/month (local builds) |
+| **GCR Storage** | $0/month (local builds) |
+| **DNS Zone** | ~$0.40/month |
+| **Total** | **~$0.40/month** |
 
 ## Support
 
