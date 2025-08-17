@@ -170,11 +170,11 @@ sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
 
 # Update Skaffold configuration
 print_status "Updating Skaffold configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" skaffold.yaml
+sed -i.bak "s|test-backend|$PROJECT_NAME|g" skaffold.yaml
 
 # Update Makefile
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Makefile
+sed -i.bak "s|test-backend|$PROJECT_NAME|g" Makefile
 
 # Clean up temporary .bak files created by sed
 print_status "Cleaning up temporary files..."
