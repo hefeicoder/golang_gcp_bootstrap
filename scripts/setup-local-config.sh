@@ -70,9 +70,10 @@ HOT_RELOAD=true
 K8S_NAMESPACE=default
 K8S_CONTEXT=minikube
 
-# Pulumi Configuration
-PULUMI_STACK=dev
-PULUMI_ORG=your-org
+# Infrastructure Configuration
+CLUSTER_NAME=grpc-cluster-dev
+ZONE_NAME=grpc-zone
+IP_NAME=grpc-external-ip
 EOF
 
 echo -e "${GREEN}✅ Created .env file${NC}"
