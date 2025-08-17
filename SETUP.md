@@ -66,9 +66,12 @@ gcloud init
 3. Run the installer and follow the prompts
 
 ### 5. Configure GCP
+
+**IMPORTANT**: Authentication is required for all GCP operations.
+
 ```bash
-# Login to GCP
-gcloud auth login
+# Authenticate with Google Cloud
+gcloud auth application-default login --no-browser
 
 # Set your project
 gcloud config set project YOUR_PROJECT_ID
@@ -80,6 +83,11 @@ gcloud services enable dns.googleapis.com
 # Note: cloudbuild.googleapis.com is NOT enabled to avoid costs
 # The project uses local Docker builds instead of Google Cloud Build
 ```
+
+**Authentication Process:**
+- Follow the URL provided in the terminal to complete authentication
+- Make sure to consent to all required scopes when prompted
+- This method works reliably in all environments
 
 ### 6. Set Up Local Configuration (RECOMMENDED)
 

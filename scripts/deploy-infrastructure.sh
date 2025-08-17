@@ -48,7 +48,7 @@ check_command "helm"
 
 # Authenticate with GCP
 echo -e "${YELLOW}Authenticating with GCP...${NC}"
-gcloud auth application-default login
+gcloud auth application-default login --no-browser
 gcloud config set project $GCP_PROJECT_ID
 
 # Enable required APIs

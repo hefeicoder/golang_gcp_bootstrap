@@ -46,9 +46,11 @@ source .env
 
 ### 3. Configure GCP
 
+**IMPORTANT**: Authentication is required for all GCP operations.
+
 ```bash
-# Authenticate with GCP (no service account keys needed!)
-gcloud auth application-default login
+# Authenticate with GCP
+gcloud auth application-default login --no-browser
 gcloud config set project $GCP_PROJECT_ID
 
 # Enable required APIs
@@ -57,6 +59,11 @@ gcloud services enable compute.googleapis.com
 gcloud services enable dns.googleapis.com
 # Note: cloudbuild.googleapis.com is NOT needed - we use local builds
 ```
+
+**Authentication Process:**
+- Follow the URL provided in the terminal to complete authentication
+- Make sure to consent to all required scopes when prompted
+- This method works reliably in all environments
 
 ### 4. Deploy Infrastructure
 

@@ -41,12 +41,14 @@ make test
 ### 4. **Deploy to GKE**
 ```bash
 # Configure GCP credentials
-gcloud auth login
+gcloud auth application-default login --no-browser
 gcloud config set project YOUR_PROJECT_ID
 
 # Deploy infrastructure and application
 make deploy-dev
 ```
+
+**Note**: Follow the URL provided in the terminal to complete authentication. This method works reliably in all environments.
 
 ## 🏗️ Architecture
 
