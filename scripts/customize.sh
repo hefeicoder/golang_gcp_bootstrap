@@ -58,6 +58,13 @@ echo "   Go modules use paths like: github.com/USERNAME/PROJECT_NAME"
 echo "   This affects import statements and module resolution"
 read -p "Enter your GitHub username/organization (for Go module path): " GITHUB_USER
 
+# Handle case where user enters full repository path
+if [[ "$GITHUB_USER" == *"/"* ]]; then
+    # Extract username from full path (e.g., "hefeicoder/golang_gcp_bootstrap" -> "hefeicoder")
+    GITHUB_USER=$(echo "$GITHUB_USER" | cut -d'/' -f1)
+    print_info "Extracted GitHub username: $GITHUB_USER"
+fi
+
 # Validate inputs
 if [ -z "$GITHUB_USER" ] || [ -z "$PROJECT_NAME" ] || [ -z "$DOMAIN_NAME" ] || [ -z "$GCP_PROJECT_ID" ] || [ -z "$DOCKER_REGISTRY" ]; then
     print_error "All fields are required!"
@@ -99,9 +106,11 @@ cp go.mod go.mod.backup
 cp proto/api/grpc_service.proto proto/api/grpc_service.proto.backup
 cp proto/buf.yaml proto/buf.yaml.backup
 cp proto/buf.gen.yaml proto/buf.gen.yaml.backup
-
+cp helm/grpc-service/Chart.yaml helm/grpc-service/Chart.yaml.backup
 cp helm/grpc-service/values.yaml helm/grpc-service/values.yaml.backup
 cp .github/workflows/ci.yml .github/workflows/ci.yml.backup
+cp .golangci.yml .golangci.yml.backup
+cp DEPLOYMENT.md DEPLOYMENT.md.backup
 
 # Update go.mod
 print_status "Updating go.mod..."
@@ -134,6 +143,19 @@ print_status "Updating CI/CD configuration..."
 sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .github/workflows/ci.yml
 sed -i.bak "s|GCP_PROJECT_ID|$GCP_PROJECT_ID|g" .github/workflows/ci.yml
 sed -i.bak "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
+
+# Update Chart.yaml
+print_status "Updating Helm Chart configuration..."
+sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" helm/grpc-service/Chart.yaml
+sed -i.bak "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
+
+# Update golangci-lint configuration
+print_status "Updating golangci-lint configuration..."
+sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$PROJECT_NAME|g" .golangci.yml
+
+# Update deployment documentation
+print_status "Updating deployment documentation..."
+sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" DEPLOYMENT.md
 
 # Update Docker files
 print_status "Updating Docker configuration..."
