@@ -64,7 +64,7 @@ prompt_with_default "What's your project name (for resource naming)?" "$(get_env
 # Create .env file
 if [ "$EXISTING_ENV" = true ]; then
     echo -e "${YELLOW}Backing up existing .env file...${NC}"
-    cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
+    cp .env .env.backup
     echo -e "${GREEN}✅ Backup created${NC}"
 fi
 
