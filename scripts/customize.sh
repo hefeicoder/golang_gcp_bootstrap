@@ -115,17 +115,7 @@ fi
 echo ""
 print_info "Starting customization..."
 
-# Backup original files
-print_status "Creating backups..."
-cp go.mod go.mod.backup
-cp proto/api/grpc_service.proto proto/api/grpc_service.proto.backup
-cp proto/buf.yaml proto/buf.yaml.backup
-cp proto/buf.gen.yaml proto/buf.gen.yaml.backup
-cp helm/grpc-service/Chart.yaml helm/grpc-service/Chart.yaml.backup
-cp helm/grpc-service/values.yaml helm/grpc-service/values.yaml.backup
-cp .github/workflows/ci.yml .github/workflows/ci.yml.backup
-cp .golangci.yml .golangci.yml.backup
-cp DEPLOYMENT.md DEPLOYMENT.md.backup
+
 
 # Update go.mod
 print_status "Updating go.mod with repository name '$REPO_NAME'..."
@@ -186,8 +176,8 @@ sed -i.bak "s|grpc-service|$PROJECT_NAME|g" skaffold.yaml
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Makefile
 
-# Clean up backup files
-print_status "Cleaning up backup files..."
+# Clean up temporary .bak files created by sed
+print_status "Cleaning up temporary files..."
 find . -name "*.bak" -delete
 
 # Regenerate protobuf code
@@ -214,10 +204,11 @@ echo "  ✅ CI/CD workflows: $REPO_NAME"
 echo ""
 print_info "Next steps:"
 echo "1. Review the changes: git diff"
-echo "2. Commit your changes: git add . && git commit -m 'Customize project for $PROJECT_NAME'"
-echo "3. Set up your GCP project and enable required APIs"
-echo "4. Configure GitHub Secrets for CI/CD"
-echo "5. Start developing: make dev"
+echo "2. If you don't like the changes: git checkout . (reverts everything)"
+echo "3. If you like the changes: git add . && git commit -m 'Customize project for $PROJECT_NAME'"
+echo "4. Set up your GCP project and enable required APIs"
+echo "5. Configure GitHub Secrets for CI/CD"
+echo "6. Start developing: make dev"
 echo ""
 print_warning "Don't forget to:"
 echo "- Update the README.md with your project-specific information"
