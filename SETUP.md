@@ -107,102 +107,51 @@ This will create:
 If you need CI/CD with GitHub Actions, go to your repository Settings → Secrets and add:
 - `GCP_PROJECT_ID`: Your GCP project ID
 
-## 🔐 **Local Configuration Management**
+## 🔐 **Local Configuration Setup**
 
-### **Local Configuration (RECOMMENDED)** ⭐
+### **Automated Setup (RECOMMENDED)** ⭐
 
 **Best for**: Local development and testing
 
-#### **Method 1: Environment Variables (Simplest)**
-
-Create a local `.env` file (NOT in repo):
+The easiest way to set up your local configuration is to use the automated script:
 
 ```bash
-# Create .env file (add to .gitignore)
+# Run the setup script
+./scripts/setup-local-config.sh
+```
+
+This script will:
+- ✅ **Create** `.env` file with your configuration
+- ✅ **Create** `infrastructure/config.env` for infrastructure settings
+- ✅ **Create** `helm/grpc-service/values.local.yaml` for local Helm overrides
+- ✅ **Create** `~/.config/golang-grpc-bootstrap/config.env` for global settings
+- ✅ **Add** configuration to your shell profile automatically
+- ✅ **Backup** existing configuration if needed
+
+### **Manual Setup (Alternative)**
+
+If you prefer to set up configuration manually:
+
+```bash
+# 1. Create .env file
 cat > .env << EOF
 GCP_PROJECT_ID=your-project-id
 GCP_REGION=us-central1
 DOMAIN_NAME=your-domain.com
 DOCKER_REGISTRY=gcr.io
+PROJECT_NAME=grpc-service
 EOF
 
-# Load in your shell
-source .env
-```
-
-#### **Method 2: Local Config Directory**
-
-Create a local config directory:
-
-```bash
-# Create local config directory
-mkdir -p ~/.config/golang-grpc-bootstrap
-
-# Store configuration
-cat > ~/.config/golang-grpc-bootstrap/config.env << EOF
-GCP_PROJECT_ID=your-project-id
-GCP_REGION=us-central1
-DOMAIN_NAME=your-domain.com
-DOCKER_REGISTRY=gcr.io
-EOF
-
-# Load in your shell
-source ~/.config/golang-grpc-bootstrap/config.env
-```
-
-#### **Method 3: Shell Profile Integration**
-
-Add to your `~/.zshrc` or `~/.bashrc`:
-
-```bash
-# Add to your shell profile
-echo 'export GCP_PROJECT_ID="your-project-id"' >> ~/.zshrc
-echo 'export GCP_REGION="us-central1"' >> ~/.zshrc
-echo 'export DOMAIN_NAME="your-domain.com"' >> ~/.zshrc
-
-# Reload shell
-source ~/.zshrc
-```
-
-#### **Method 4: Infrastructure Configuration**
-
-Store infrastructure settings locally:
-
-```bash
-# Create infrastructure configuration
+# 2. Create infrastructure config
 mkdir -p infrastructure
 cat > infrastructure/config.env << EOF
-CLUSTER_NAME=grpc-cluster-dev
-ZONE_NAME=grpc-zone
-IP_NAME=grpc-external-ip
-EOF
-```
-
-#### **Method 5: Local Helm Values**
-
-Create local Helm values override:
-
-```bash
-# Create local values file (add to .gitignore)
-cat > helm/grpc-service/values.local.yaml << EOF
-# Local development overrides
-replicaCount: 1
-resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
-
-# Local-specific settings
-image:
-  repository: localhost:5000/test-backend
-  tag: "latest"
+CLUSTER_NAME=grpc-service-cluster-dev
+ZONE_NAME=grpc-service-dns-zone
+IP_NAME=grpc-service-external-ip
 EOF
 
-# Use with Helm
-helm install my-app ./helm/grpc-service -f values.local.yaml
+# 3. Load configuration
+source .env
 ```
 
 ### **Local Development Setup (No Secrets Needed)**
