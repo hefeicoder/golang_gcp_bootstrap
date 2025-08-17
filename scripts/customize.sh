@@ -176,6 +176,13 @@ sed -i.bak "s|test-backend|$PROJECT_NAME|g" skaffold.yaml
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."
 sed -i.bak "s|test-backend|$PROJECT_NAME|g" Makefile
 
+# Rename Helm chart directory
+print_status "Renaming Helm chart directory..."
+if [ -d "helm/grpc-service" ]; then
+    mv helm/grpc-service "helm/$PROJECT_NAME"
+    print_info "Renamed helm/grpc-service to helm/$PROJECT_NAME"
+fi
+
 # Clean up temporary .bak files created by sed
 print_status "Cleaning up temporary files..."
 find . -name "*.bak" -delete
