@@ -125,8 +125,12 @@ sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/
 sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" go.mod
 
 # Update proto files
-print_status "Updating protocol buffer files with repository name '$REPO_NAME'..."
+print_status "Updating protocol buffer files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
+# Update the project name part in proto go_package
+sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
+# Update buf.gen.yaml
+sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
 # Update buf.yaml with new project name
 sed -i.bak "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml

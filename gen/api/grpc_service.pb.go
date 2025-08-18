@@ -508,9 +508,9 @@ const file_api_grpc_service_proto_rawDesc = "" +
 	"\aGetInfo\x12\x16.api.v1.GetInfoRequest\x1a\x17.api.v1.GetInfoResponse\x12F\n" +
 	"\vProcessData\x12\x1a.api.v1.ProcessDataRequest\x1a\x1b.api.v1.ProcessDataResponse\x12E\n" +
 	"\n" +
-	"StreamData\x12\x19.api.v1.StreamDataRequest\x1a\x1a.api.v1.StreamDataResponse0\x01B\x9e\x01\n" +
+	"StreamData\x12\x19.api.v1.StreamDataRequest\x1a\x1a.api.v1.StreamDataResponse0\x01B\xa1\x01\n" +
 	"\n" +
-	"com.api.v1B\x10GrpcServiceProtoP\x01ZEgithub.com/hefeicoder/golang_gcp_bootstrap/test-backend/gen/api;apiv1\xa2\x02\x03AXX\xaa\x02\x06Api.V1\xca\x02\x06Api\\V1\xe2\x02\x12Api\\V1\\GPBMetadata\xea\x02\aApi::V1b\x06proto3"
+	"com.api.v1B\x10GrpcServiceProtoP\x01ZHgithub.com/hefeicoder/golang_gcp_bootstrap/example-backend/gen/api;apiv1\xa2\x02\x03AXX\xaa\x02\x06Api.V1\xca\x02\x06Api\\V1\xe2\x02\x12Api\\V1\\GPBMetadata\xea\x02\aApi::V1b\x06proto3"
 
 var (
 	file_api_grpc_service_proto_rawDescOnce sync.Once
