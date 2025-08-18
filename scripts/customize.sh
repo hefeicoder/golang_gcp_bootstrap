@@ -119,27 +119,23 @@ print_info "Starting customization..."
 
 # Update go.mod
 print_status "Updating go.mod with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-sed -i '' "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
-sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
-# Update the project name part in the module path
-sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" go.mod
+sed -i '' "s|github.com/hefeicoder/golang_gcp_bootstrap/example-backend|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
+sed -i '' "s|github.com/hefeicoder/golang_gcp_bootstrap/example-backend/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
+# Note: Module path should be just github.com/USER/REPO, not include project name
 
 # Update proto files
 print_status "Updating protocol buffer files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
-# Update the project name part in proto go_package
-sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
+sed -i '' "s|github.com/hefeicoder/golang_gcp_bootstrap/example-backend/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
+# Note: go_package should stay as /gen/... not include project name
 # Update buf.gen.yaml
-sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
+sed -i '' "s|github.com/hefeicoder/golang_gcp_bootstrap/example-backend/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 # Update buf.yaml with new project name
 sed -i '' "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
-sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
 print_status "Updating Go source files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-find . -name "*.go" -type f -exec sed -i '' "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
-# Update the project name part in import statements
-find . -name "*.go" -type f -exec sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" {} \;
+find . -name "*.go" -type f -exec sed -i '' "s|github.com/hefeicoder/golang_gcp_bootstrap/example-backend|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
+# Note: We don't update import paths to include project name - they should stay as /gen/...
 
 # Update infrastructure files
 print_status "Updating infrastructure configuration with project name '$PROJECT_NAME'..."
@@ -170,9 +166,7 @@ sed -i '' "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
 print_status "Updating golangci-lint configuration with repository name '$REPO_NAME'..."
 sed -i '' "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .golangci.yml
 
-# Update deployment documentation
-print_status "Updating deployment documentation with project name '$PROJECT_NAME'..."
-sed -i '' "s|golang-grpc-gke|$PROJECT_NAME|g" DEPLOYMENT.md
+# Deployment documentation removed - no longer needed
 
 # Update Docker files
 print_status "Updating Docker configuration with project name '$PROJECT_NAME'..."
