@@ -2,7 +2,7 @@
 replicaCount: 1  # Reduced from 3 to 1 for cost savings
 
 image:
-  repository: test-backend
+  repository: gcr.io/freegcpproject-469318/example-backend
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -39,11 +39,11 @@ ingress:
 
 resources:
   limits:
-    cpu: 500m    # Reduced from 1000m to 500m
-    memory: 512Mi # Reduced from 1Gi to 512Mi
+    cpu: 50m     # Minimal for e2-micro
+    memory: 64Mi  # Minimal for e2-micro
   requests:
-    cpu: 100m    # Reduced from 500m to 100m
-    memory: 128Mi # Reduced from 512Mi to 128Mi
+    cpu: 10m     # Minimal for e2-micro
+    memory: 16Mi  # Minimal for e2-micro
 
 autoscaling:
   enabled: false  # Disabled to avoid scaling costs
@@ -66,9 +66,9 @@ grpc:
 
 # Monitoring configuration
 monitoring:
-  enabled: true
+  enabled: false  # Disabled for e2-micro to save resources
   serviceMonitor:
-    enabled: true
+    enabled: false
     interval: 30s
 
 # Logging configuration

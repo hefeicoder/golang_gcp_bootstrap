@@ -102,7 +102,7 @@ cleanup-infrastructure: ## Clean up infrastructure
 .PHONY: deploy-dev
 deploy-dev: ## Deploy to development environment
 	@echo "$(YELLOW)Deploying to development...$(NC)"
-	skaffold run --profile=dev
+	skaffold run --profile=staging
 	@echo "$(GREEN)Development deployment complete!$(NC)"
 
 .PHONY: deploy-staging

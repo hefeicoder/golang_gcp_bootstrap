@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/hefeicoder/golang_gcp_bootstrap/test-backend/gen/api/apiv1connect"
-	"github.com/hefeicoder/golang_gcp_bootstrap/test-backend/internal/server"
+	"github.com/hefeicoder/golang_gcp_bootstrap/example-backend/gen/api/apiv1connect"
+	"github.com/hefeicoder/golang_gcp_bootstrap/example-backend/internal/server"
 )
 
 const (

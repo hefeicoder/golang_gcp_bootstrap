@@ -118,9 +118,11 @@ print_info "Starting customization..."
 
 
 # Update go.mod
-print_status "Updating go.mod with repository name '$REPO_NAME'..."
+print_status "Updating go.mod with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
+# Update the project name part in the module path
+sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" go.mod
 
 # Update proto files
 print_status "Updating protocol buffer files with repository name '$REPO_NAME'..."
@@ -130,8 +132,10 @@ sed -i.bak "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|
 sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
-print_status "Updating Go source files with repository name '$REPO_NAME'..."
+print_status "Updating Go source files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
 find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
+# Update the project name part in import statements
+find . -name "*.go" -type f -exec sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" {} \;
 
 # Update infrastructure files
 print_status "Updating infrastructure configuration with project name '$PROJECT_NAME'..."
@@ -140,8 +144,10 @@ if [ -f infrastructure/config.env ]; then
 fi
 
 # Update Helm values
-print_status "Updating Helm configuration with project name '$PROJECT_NAME'..."
+print_status "Updating Helm configuration with project name '$PROJECT_NAME' and registry '$DOCKER_REGISTRY'..."
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" helm/grpc-service/values.yaml
+# Replace any image repository name with the full registry path (robust approach)
+sed -i.bak "/^  repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" helm/grpc-service/values.yaml
 sed -i.bak "s|your-domain.com|$DOMAIN_NAME|g" helm/grpc-service/values.yaml
 
 # Update CI/CD workflow
@@ -170,16 +176,16 @@ sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile
 sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
 
 # Update Skaffold configuration
-print_status "Updating Skaffold configuration with project name '$PROJECT_NAME'..."
+print_status "Updating Skaffold configuration with project name '$PROJECT_NAME' and registry '$DOCKER_REGISTRY'..."
 # Replace the service name in skaffold.yaml (more targeted approach)
 sed -i.bak "/^      - name:/s/name: .*/name: $PROJECT_NAME/" skaffold.yaml
-sed -i.bak "/^        image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
-sed -i.bak "/^          image\.repository:/s/repository: .*/repository: $PROJECT_NAME/" skaffold.yaml
+# Replace build artifacts image with full registry path
+sed -i.bak "/^    - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
+# Replace image repository in setValues with full registry path
+sed -i.bak "/^          image\.repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
 sed -i.bak "/^    resourceName:/s/resourceName: .*/resourceName: $PROJECT_NAME/" skaffold.yaml
-# Replace build artifacts image
-sed -i.bak "/^    - image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
 # Replace test image
-sed -i.bak "/^  - image:/s/image: .*/image: $PROJECT_NAME/" skaffold.yaml
+sed -i.bak "/^  - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
 
 # Update Makefile
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."

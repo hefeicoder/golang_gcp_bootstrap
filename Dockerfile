@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
@@ -13,11 +13,13 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
+# Install buf (pinned version for better caching)
+RUN go install github.com/bufbuild/buf/cmd/buf@v1.56.0
+
 # Copy source code
 COPY . .
 
 # Generate protobuf code
-RUN go install github.com/bufbuild/buf/cmd/buf@latest
 RUN cd proto && buf generate
 
 # Build the application
