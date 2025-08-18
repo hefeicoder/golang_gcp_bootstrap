@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -61,20 +62,15 @@ func (s *GrpcService) GetInfo(ctx context.Context, req *connect.Request[apiv1.Ge
 	return connect.NewResponse(response), nil
 }
 
-// ProcessData processes some data and returns a result
+// ProcessData processes some data and returns a random number
 func (s *GrpcService) ProcessData(ctx context.Context, req *connect.Request[apiv1.ProcessDataRequest]) (*connect.Response[apiv1.ProcessDataResponse], error) {
 	s.logger.WithField("data", req.Msg.Data).Info("ProcessData called")
 
-	// Simple data processing logic
-	result := fmt.Sprintf("Processed: %s", req.Msg.Data)
+	// Generate a random number between 1 and 1000
+	randomNumber := rand.Intn(1000) + 1
+	result := fmt.Sprintf("%d", randomNumber)
 	success := true
 	var errorMessage string
-
-	if req.Msg.Data == "" {
-		success = false
-		errorMessage = "Data cannot be empty"
-		result = ""
-	}
 
 	response := &apiv1.ProcessDataResponse{
 		Result:       result,

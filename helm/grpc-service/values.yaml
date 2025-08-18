@@ -22,8 +22,9 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 9090
+  nodePort: 30090
   annotations: {}
 
 ingress:

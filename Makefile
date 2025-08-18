@@ -164,6 +164,13 @@ install-tools: ## Install required tools
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	@echo "$(GREEN)Tools installation complete!$(NC)"
 
+.PHONY: test-e2e
+test-e2e: ## Run end-to-end test against GCP deployment
+	@echo "$(YELLOW)Building test client...$(NC)"
+	go build -o bin/test-client ./cmd/test-client
+	@echo "$(YELLOW)Running end-to-end test against GCP deployment...$(NC)"
+	./bin/test-client
+
 .PHONY: all
 all: setup generate build test lint ## Run all checks
 	@echo "$(GREEN)All checks passed!$(NC)"
