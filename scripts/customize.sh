@@ -119,91 +119,89 @@ print_info "Starting customization..."
 
 # Update go.mod
 print_status "Updating go.mod with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
+sed -i '' "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" go.mod
+sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" go.mod
 # Update the project name part in the module path
-sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" go.mod
+sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" go.mod
 
 # Update proto files
 print_status "Updating protocol buffer files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
+sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/api/grpc_service.proto
 # Update the project name part in proto go_package
-sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
+sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/api/grpc_service.proto
 # Update buf.gen.yaml
-sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
+sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*/gen|/$REPO_NAME/$PROJECT_NAME/gen|g" proto/buf.gen.yaml
 # Update buf.yaml with new project name
-sed -i.bak "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
-sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
+sed -i '' "s|buf\.build/hefeicoder/.*|buf.build/$GITHUB_USER/$BUF_PROJECT_NAME|g" proto/buf.yaml
+sed -i '' "s|github.com/hefeicoder/golang-grpc-gke/gen|github.com/$GITHUB_USER/$REPO_NAME/gen|g" proto/buf.gen.yaml
 
 # Update Go source files
 print_status "Updating Go source files with repository name '$REPO_NAME' and project name '$PROJECT_NAME'..."
-find . -name "*.go" -type f -exec sed -i.bak "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
+find . -name "*.go" -type f -exec sed -i '' "s|github.com/hefeicoder/golang-grpc-gke|github.com/$GITHUB_USER/$REPO_NAME|g" {} \;
 # Update the project name part in import statements
-find . -name "*.go" -type f -exec sed -i.bak "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" {} \;
+find . -name "*.go" -type f -exec sed -i '' "s|/$REPO_NAME/[a-zA-Z0-9-]*|/$REPO_NAME/$PROJECT_NAME|g" {} \;
 
 # Update infrastructure files
 print_status "Updating infrastructure configuration with project name '$PROJECT_NAME'..."
 if [ -f infrastructure/config.env ]; then
-    sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" infrastructure/config.env
+    sed -i '' "s|golang-grpc-gke|$PROJECT_NAME|g" infrastructure/config.env
 fi
 
 # Update Helm values
 print_status "Updating Helm configuration with project name '$PROJECT_NAME' and registry '$DOCKER_REGISTRY'..."
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" helm/grpc-service/values.yaml
+sed -i '' "s|grpc-service|$PROJECT_NAME|g" helm/grpc-service/values.yaml
 # Replace any image repository name with the full registry path (robust approach)
-sed -i.bak "/^  repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" helm/grpc-service/values.yaml
-sed -i.bak "s|your-domain.com|$DOMAIN_NAME|g" helm/grpc-service/values.yaml
+sed -i '' "/^  repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" helm/grpc-service/values.yaml
+sed -i '' "s|your-domain.com|$DOMAIN_NAME|g" helm/grpc-service/values.yaml
 
 # Update CI/CD workflow
 print_status "Updating CI/CD configuration with repository name '$REPO_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .github/workflows/ci.yml
-sed -i.bak "s|GCP_PROJECT_ID|$GCP_PROJECT_ID|g" .github/workflows/ci.yml
-sed -i.bak "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
+sed -i '' "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .github/workflows/ci.yml
+sed -i '' "s|GCP_PROJECT_ID|$GCP_PROJECT_ID|g" .github/workflows/ci.yml
+sed -i '' "s|gcr.io|$DOCKER_REGISTRY|g" .github/workflows/ci.yml
 
 # Update Chart.yaml
 print_status "Updating Helm Chart configuration with repository name '$REPO_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" helm/grpc-service/Chart.yaml
-sed -i.bak "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
-sed -i.bak "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
+sed -i '' "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" helm/grpc-service/Chart.yaml
+sed -i '' "s|Your Name|$GITHUB_USER|g" helm/grpc-service/Chart.yaml
+sed -i '' "s|your-email@example.com||g" helm/grpc-service/Chart.yaml
 
 # Update golangci-lint configuration
 print_status "Updating golangci-lint configuration with repository name '$REPO_NAME'..."
-sed -i.bak "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .golangci.yml
+sed -i '' "s|hefeicoder/golang_gcp_bootstrap|$GITHUB_USER/$REPO_NAME|g" .golangci.yml
 
 # Update deployment documentation
 print_status "Updating deployment documentation with project name '$PROJECT_NAME'..."
-sed -i.bak "s|golang-grpc-gke|$PROJECT_NAME|g" DEPLOYMENT.md
+sed -i '' "s|golang-grpc-gke|$PROJECT_NAME|g" DEPLOYMENT.md
 
 # Update Docker files
 print_status "Updating Docker configuration with project name '$PROJECT_NAME'..."
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile
-sed -i.bak "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
+sed -i '' "s|grpc-service|$PROJECT_NAME|g" Dockerfile
+sed -i '' "s|grpc-service|$PROJECT_NAME|g" Dockerfile.dev
 
 # Update Skaffold configuration
 print_status "Updating Skaffold configuration with project name '$PROJECT_NAME' and registry '$DOCKER_REGISTRY'..."
 # Replace the service name in skaffold.yaml (more targeted approach)
-sed -i.bak "/^      - name:/s/name: .*/name: $PROJECT_NAME/" skaffold.yaml
+sed -i '' "/^      - name:/s/name: .*/name: $PROJECT_NAME/" skaffold.yaml
 # Replace build artifacts image with full registry path
-sed -i.bak "/^    - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
+sed -i '' "/^    - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
 # Replace image repository in setValues with full registry path
-sed -i.bak "/^          image\.repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
-sed -i.bak "/^    resourceName:/s/resourceName: .*/resourceName: $PROJECT_NAME/" skaffold.yaml
+sed -i '' "/^          image\.repository:/s|repository: .*|repository: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
+sed -i '' "/^    resourceName:/s/resourceName: .*/resourceName: $PROJECT_NAME/" skaffold.yaml
 # Replace test image
-sed -i.bak "/^  - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
+sed -i '' "/^  - image:/s|image: .*|image: $DOCKER_REGISTRY/$GCP_PROJECT_ID/$PROJECT_NAME|" skaffold.yaml
 
 # Update Makefile
 print_status "Updating Makefile with project name '$PROJECT_NAME'..."
 # Replace IMAGE_NAME variable
-sed -i.bak "s|IMAGE_NAME := .*|IMAGE_NAME := $PROJECT_NAME|g" Makefile
+sed -i '' "s|IMAGE_NAME := .*|IMAGE_NAME := $PROJECT_NAME|g" Makefile
 # Replace helm template command
-sed -i.bak "s|helm template .* helm/grpc-service|helm template $PROJECT_NAME helm/grpc-service|g" Makefile
+sed -i '' "s|helm template .* helm/grpc-service|helm template $PROJECT_NAME helm/grpc-service|g" Makefile
 
 # Note: Helm chart directory stays as 'grpc-service' for consistency
 # Only the references in configuration files are updated
 
-# Clean up temporary .bak files created by sed
-print_status "Cleaning up temporary files..."
-find . -name "*.bak" -delete
+# No cleanup needed - we don't create backup files
 
 # Regenerate protobuf code
 print_status "Regenerating protobuf code..."

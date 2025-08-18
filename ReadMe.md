@@ -7,6 +7,7 @@ This is a **bootstrap project** designed to be forked and customized for your ow
 ## 🎯 Quick Start
 
 ### 1. **Fork and Clone**
+**⚠️ Important:** After forking, you MUST run the customization script before doing anything else!
 ```bash
 # Click "Fork" button on GitHub, then clone your fork
 git clone https://github.com/hefeicoder/golang_gcp_bootstrap.git
@@ -17,11 +18,14 @@ cd golang_gcp_bootstrap
 # cd my-custom-name
 ```
 
-### 2. **Customize the Project**
+### 2. **Customize the Project (REQUIRED)**
 ```bash
-# Replace placeholder values with your own
+# IMPORTANT: Run this BEFORE doing anything else!
+# This updates all import paths and configurations for your specific project
 ./scripts/customize.sh
 ```
+
+**⚠️ Critical:** You MUST run the customization script immediately after forking. The project contains hardcoded paths that will break if you try to use it without customization.
 
 **What gets customized:**
 - **Go Module Path**: `github.com/YOUR_USERNAME/YOUR_PROJECT` (for import statements)
