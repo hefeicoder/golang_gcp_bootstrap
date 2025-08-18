@@ -40,9 +40,27 @@ func main() {
 	// Register reflection service on gRPC server
 	reflection.Register(grpcServer)
 
+	// CORS middleware
+	corsMiddleware := func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Allow all origins for demo purposes
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+			// Handle preflight requests
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	}
+
 	// Create HTTP server with gRPC and Connect handlers
 	mux := http.NewServeMux()
-	mux.Handle(path, handler)
+	mux.Handle(path, corsMiddleware(handler))
 
 	// Add health check endpoints
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +75,17 @@ func main() {
 
 	// Add metrics endpoint
 	mux.Handle("/metrics", promhttp.Handler())
+
+	// Serve the demo HTML page at root
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Only serve the demo page for GET requests to root
+		if r.Method == "GET" && r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "text/html")
+			http.ServeFile(w, r, "web/demo.html")
+		} else {
+			http.NotFound(w, r)
+		}
+	})
 
 	// Create HTTP server with h2c support for gRPC
 	httpServer := &http.Server{

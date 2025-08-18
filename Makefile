@@ -171,6 +171,8 @@ test-e2e: ## Run end-to-end test against GCP deployment
 	@echo "$(YELLOW)Running end-to-end test against GCP deployment...$(NC)"
 	./bin/test-client
 
+
+
 .PHONY: all
 all: setup generate build test lint ## Run all checks
 	@echo "$(GREEN)All checks passed!$(NC)"

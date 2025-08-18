@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCP gRPC Service Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .service-info {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        .endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #dee2e6;
+        }
+        .endpoint h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 4px solid #28a745;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .loading {
+            color: #007bff;
+            font-style: italic;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.healthy {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 GCP gRPC Service Demo</h1>
+        
+        <div class="service-info">
+            <h2>Service Information</h2>
+            <p><strong>Backend URL:</strong> <span id="backend-url">Loading...</span></p>
+            <p><strong>Status:</strong> <span id="service-status" class="status">Checking...</span></p>
+        </div>
+
+        <div class="endpoint">
+            <h3>🎲 ProcessData - Random Number Generator</h3>
+            <p>Generate a random number between 1-1000 from the gRPC backend.</p>
+            <button onclick="testProcessData()">Generate Random Number</button>
+            <div id="process-data-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>🏥 GetHealth - Service Health Check</h3>
+            <p>Check the health status of the gRPC service.</p>
+            <button onclick="testGetHealth()">Check Health</button>
+            <div id="health-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>ℹ️ GetInfo - Service Information</h3>
+            <p>Get detailed information about the service.</p>
+            <button onclick="testGetInfo()">Get Info</button>
+            <div id="info-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="endpoint">
+            <h3>🔄 Test All Endpoints</h3>
+            <p>Run all tests to verify the complete service.</p>
+            <button onclick="testAll()">Test All</button>
+            <div id="all-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Service configuration
+        let backendUrl = '';
+        let serviceStatus = 'unknown';
+
+        // Initialize the page
+        async function init() {
+            try {
+                // Use relative URLs since the HTML is served from the same domain as the API
+                backendUrl = window.location.origin;
+                
+                document.getElementById('backend-url').textContent = backendUrl;
+                
+                // Test the connection
+                await testGetHealth();
+            } catch (error) {
+                console.error('Initialization failed:', error);
+                document.getElementById('service-status').textContent = 'Error';
+                document.getElementById('service-status').className = 'status error';
+            }
+        }
+
+        // Test ProcessData endpoint
+        async function testProcessData() {
+            const resultDiv = document.getElementById('process-data-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">Generating random number...</span>';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch(`${backendUrl}/api.v1.GrpcService/ProcessData`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        data: 'test-data',
+                        options: { test: 'true' }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `✅ Success!\n\nRandom Number: ${result.result}\nSuccess: ${result.success}\nProcessed At: ${result.processedAt}`;
+                resultDiv.className = 'result';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error: ${error.message}\n\nThis might be because:\n- The backend service is not running\n- CORS is not configured\n- The endpoint URL is incorrect\n\nTry updating the backendUrl variable with your actual service endpoint.`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Test GetHealth endpoint
+        async function testGetHealth() {
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">Checking health...</span>';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch(`${backendUrl}/api.v1.GrpcService/GetHealth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `✅ Health Check Passed!\n\nStatus: ${result.status}\nTimestamp: ${result.timestamp}\nDetails: ${JSON.stringify(result.details, null, 2)}`;
+                resultDiv.className = 'result';
+                
+                // Update service status
+                document.getElementById('service-status').textContent = result.status;
+                document.getElementById('service-status').className = 'status healthy';
+                serviceStatus = 'healthy';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Health Check Failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                
+                document.getElementById('service-status').textContent = 'Error';
+                document.getElementById('service-status').className = 'status error';
+                serviceStatus = 'error';
+            }
+        }
+
+        // Test GetInfo endpoint
+        async function testGetInfo() {
+            const resultDiv = document.getElementById('info-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">Getting service info...</span>';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch(`${backendUrl}/api.v1.GrpcService/GetInfo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                resultDiv.innerHTML = `✅ Service Info Retrieved!\n\nVersion: ${result.version}\nEnvironment: ${result.environment}\nStart Time: ${result.startTime}\nMetadata: ${JSON.stringify(result.metadata, null, 2)}`;
+                resultDiv.className = 'result';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Test all endpoints
+        async function testAll() {
+            const resultDiv = document.getElementById('all-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<span class="loading">Running all tests...</span>';
+            resultDiv.className = 'result';
+
+            let results = [];
+            
+            try {
+                // Test health
+                await testGetHealth();
+                results.push('✅ Health Check: PASSED');
+                
+                // Test process data
+                const processResponse = await fetch(`${backendUrl}/api.v1.GrpcService/ProcessData`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: 'test' })
+                });
+                if (processResponse.ok) {
+                    const processResult = await processResponse.json();
+                    results.push(`✅ ProcessData: PASSED (Random: ${processResult.result})`);
+                } else {
+                    results.push('❌ ProcessData: FAILED');
+                }
+                
+                // Test get info
+                const infoResponse = await fetch(`${backendUrl}/api.v1.GrpcService/GetInfo`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                if (infoResponse.ok) {
+                    results.push('✅ GetInfo: PASSED');
+                } else {
+                    results.push('❌ GetInfo: FAILED');
+                }
+                
+                resultDiv.innerHTML = `🎉 All Tests Complete!\n\n${results.join('\n')}\n\nYour GCP gRPC service is working correctly!`;
+                resultDiv.className = 'result';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Test Suite Failed: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Initialize when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>

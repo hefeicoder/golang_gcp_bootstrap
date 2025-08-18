@@ -41,6 +41,9 @@ WORKDIR /app
 # Copy binary from builder stage
 COPY --from=builder /app/main .
 
+# Copy web files
+COPY web/ ./web/
+
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app
 
