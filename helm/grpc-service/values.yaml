@@ -32,7 +32,7 @@ ingress:
   className: ""
   annotations: {}
   hosts:
-    - host: grpc.example.com
+    - host: your-domain.com  # Replace with your actual domain
       paths:
         - path: /
           pathType: Prefix

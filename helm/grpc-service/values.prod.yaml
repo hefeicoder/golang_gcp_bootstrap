@@ -1,0 +1,46 @@
+# Production values for your domain
+# Copy this file and customize with your domain
+
+replicaCount: 1
+
+image:
+  repository: gcr.io/YOUR_PROJECT_ID/YOUR_SERVICE_NAME
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP  # Changed from NodePort for production
+  port: 9090
+
+ingress:
+  enabled: true  # Enable for production
+  className: "gce"
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "your-static-ip-name"
+    networking.gke.io/managed-certificates: "your-domain-cert"
+  hosts:
+    - host: your-domain.com  # Replace with your actual domain
+      paths:
+        - path: /
+          pathType: Prefix
+        - path: /api.v1.GrpcService
+          pathType: Prefix
+  tls:
+    - secretName: your-domain-tls
+      hosts:
+        - your-domain.com
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
