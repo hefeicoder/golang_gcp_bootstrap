@@ -105,12 +105,6 @@ deploy-dev: ## Deploy to development environment
 	skaffold run --profile=staging
 	@echo "$(GREEN)Development deployment complete!$(NC)"
 
-.PHONY: deploy-staging
-deploy-staging: ## Deploy to staging environment
-	@echo "$(YELLOW)Deploying to staging...$(NC)"
-	skaffold run --profile=staging
-	@echo "$(GREEN)Staging deployment complete!$(NC)"
-
 .PHONY: deploy-prod
 deploy-prod: ## Deploy to production environment
 	@echo "$(YELLOW)Deploying to production...$(NC)"

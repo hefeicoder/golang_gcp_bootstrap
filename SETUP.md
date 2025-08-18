@@ -172,6 +172,16 @@ make deploy-infrastructure
 ```
 
 ### 8. Deploy Application
+
+#### **Deployment Commands Comparison**
+
+| Command | Hot Reload | Ingress | Target | Purpose | Cost |
+|---------|------------|---------|--------|---------|------|
+| `make dev` | ✅ Yes | ❌ No | GCP | Development with live updates | ~$6/month |
+| `make deploy-dev` | ❌ No | ❌ No | GCP | One-time deployment | ~$6/month |
+| `make deploy-prod` | ❌ No | ✅ Yes | GCP | Production with external access | ~$24/month |
+
+#### **Quick Deploy**
 ```bash
 # Deploy application using Skaffold
 make deploy-dev
